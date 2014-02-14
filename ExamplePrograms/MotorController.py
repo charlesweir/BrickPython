@@ -1,14 +1,26 @@
 # James and Charles Weir
-# Controlling a servo motor
+
+# Application to control a lego NXT motor as a servo motor.
+#
+# Type keystrokes into the application window to make the motor move:
+# Numbers 0-9 make it move forward the corresponding number of quarter-turns.
+# Lower case letters a-p make it go backward the corresponding number of quarter turns.
+# Capital letter A stops the motor.
+# Capital letters B-G make it go forward at a constant speed.  B is a quarter turn per second, C a half turn, and so on.
+# Letters xyz and XYZ adjust the settings for the PID Servo Motor algorithm:
+#   X,x increase and decrease the 'distance multiplier' - the P setting.
+#   Y,y increase and decrease the 'speed multiplier' - the D setting (I think).
+#   Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
+
 
 from Application import *
 
 
 class MyApp(Application):
-    
+
     def __init__(self):
         Application.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
-    
+
     def rotate(self, degrees):
         self.stopAllCoroutines()
         motor = self.motor('A')
@@ -26,7 +38,7 @@ class MyApp(Application):
     def onKeyPress(self, event):
         if Application.onKeyPress(self, event):
             return
-        
+
         char = event.char
         if char in "0123456789":
             # rotate forwards:
@@ -36,7 +48,7 @@ class MyApp(Application):
             self.rotate(-90 * (ord(char) - ord("a") + 1))
         elif char in "ABCDEFG":
             self.setSpeed(180 * (ord(char) - ord("A") ))
-        
+
         # Adjust PID settings:
         elif char in "xyzXYZ":
             if char == 'x':

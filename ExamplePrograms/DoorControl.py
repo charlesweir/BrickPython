@@ -1,16 +1,20 @@
 # James and Charles Weir
-# Application to control a door, closing when C is pressed, starting again when S or O is pressed
+#
+# Application to automatically open and close a door using a proximity sensor.
+# It also closes and 'locks' it when C is pressed (so the sensor no longer opens it), starting again when S or O is pressed
+# The door is attached to a motor, which opens it by moving through 90 degrees, and closes it the same way.
+# The sensor is mounted above the door, so it detects approaching 'peaple'.
 
 from Application import *
 
 
 class DoorControlApp(Application):
-    
+
     def __init__(self):
         Application.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
         self.sensorActive = True
         self.addSensorCoroutine( self.openDoorWhenSensorDetected() )
-    
+
     def openDoorWhenSensorDetected(self):
         motorA = self.motor('A')
         sensor1 = self.sensor('1')
@@ -30,7 +34,7 @@ class DoorControlApp(Application):
             for i in self.doWait( 4000 ):
                 if not self.sensorActive: break
                 yield
-    
+
             print "Shutting door"
             for i in motorA.moveTo( 0, 2000 ):
                 yield
@@ -40,7 +44,7 @@ class DoorControlApp(Application):
     def onKeyPress(self, event):
         if Application.onKeyPress(self, event):
             return
-        
+
         char = event.char
         if char in 'Cc':
             print "Closing and disabling door now"
