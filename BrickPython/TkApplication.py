@@ -1,4 +1,4 @@
-# Application class.  Brings together the Tk GUI functionality, the Scheduler and the BrickPi wrapper.
+# TkApplication class.  Brings together the Tk GUI functionality, the Scheduler and the BrickPi wrapper.
 # Applications using the BrickPi derive from this, implementing appropriate functionality.
 
 
@@ -13,7 +13,7 @@ from Motor import *
 # Main application class.  I'm not usually keen on multiple inheritance, but it makes using it much simpler.
 
 
-class Application(BrickPiWrapper):
+class TkApplication(BrickPiWrapper):
 
     # Parameter: Configuration, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT } as passed to BrickPiWrapper
     def __init__(self, sensorConfiguration):

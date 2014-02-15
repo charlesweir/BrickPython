@@ -8,7 +8,7 @@
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 # (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-# Ported from Matthew Richardson's BrickPi library for C 
+# Ported from Matthew Richardson's BrickPi library for C
 # This library can be used in RaspberryPi to communicate with BrickPi
 # Major Changes from C code:
 # - The timeout parameter for BrickPiRx is in seconds expressed as a floating value
@@ -18,7 +18,7 @@
 ##################################################################################################################
 # Debugging:
 # - NOTE THAT DEBUGGING ERROR MESSAGES ARE TURNED OFF BY DEFAULT.  To debug, just take the comment out of Line 29.
-# 
+#
 # If you #define DEBUG in the program, the BrickPi.h drivers will print debug messages to the terminal. One common message is
 # "BrickPiRx error: -2", in function BrickPiUpdateValues(). This is caused by an error in the communication with one of the
 # microcontrollers on the BrickPi. When this happens, the drivers automatically re-try the communication several times before the
@@ -38,19 +38,22 @@
 
 
 import time
-
-from mock import Mock
-serial = Mock()
+import os
+if os.uname()[4].startswith("arm"):
+    from serial import *
+    ser = Serial()
+else:
+    from mock import *
+    ser = Mock()
 
 #import serial
-ser = serial.Serial()
 ser.port='/dev/ttyAMA0'
 ser.baudrate = 500000
 
-# ser.writeTimeout = 0.0005		
+# ser.writeTimeout = 0.0005
 # ser.timeout = 0.0001
 
-# DEBUG = 1	# Remove to hide errors 
+# DEBUG = 1	# Remove to hide errors
 
 PORT_A = 0
 PORT_B = 1
@@ -118,9 +121,9 @@ Retried = 0
 class BrickPiStruct:
     Address = [ 1, 2 ]
     MotorSpeed  = [0] * 4
-	
+
     MotorEnable = [0] * 4
-	
+
     EncoderOffset = [None] * 4
     Encoder       = [None] * 4
 
@@ -160,7 +163,7 @@ class button:
 		self.ljy=0
 		self.rjx=0
 		rjy=0
-		
+
 	#Update all the buttons
 	def upd(self,I2C_PORT):
 		#For all buttons:
@@ -170,40 +173,40 @@ class button:
 		#Left and right joystick: -127 to 127
 		self.ljb=~(BrickPi.SensorI2CIn[I2C_PORT][0][0]>>1)&1
 		self.rjb=~(BrickPi.SensorI2CIn[I2C_PORT][0][0]>>2)&1
-		
+
 		#For buttons a,b,c,d
 		self.d=~(BrickPi.SensorI2CIn[I2C_PORT][0][0]>>4)&1
 		self.c=~(BrickPi.SensorI2CIn[I2C_PORT][0][0]>>5)&1
 		self.b=~(BrickPi.SensorI2CIn[I2C_PORT][0][0]>>6)&1
 		self.a=~(BrickPi.SensorI2CIn[I2C_PORT][0][0]>>7)&1
-		
+
 		#For buttons l1,l2,r1,r2
 		self.l2=~(BrickPi.SensorI2CIn[I2C_PORT][0][1])&1
 		self.r2=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>1)&1
 		self.l1=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>2)&1
 		self.r1=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>3)&1
-		
+
 		#For buttons square,triangle,cross,circle
 		self.tri=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>4)&1
 		self.cir=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>5)&1
 		self.cro=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>6)&1
 		self.sqr=~(BrickPi.SensorI2CIn[I2C_PORT][0][1]>>7)&1
-		
+
 		#Left joystick x and y , -127 to 127
 		self.ljx=BrickPi.SensorI2CIn[I2C_PORT][0][2]-128
 		self.ljy=~BrickPi.SensorI2CIn[I2C_PORT][0][3]+129
-	
+
 		#Right joystick x and y , -127 to 127
 		self.rjx=BrickPi.SensorI2CIn[I2C_PORT][0][4]-128
 		self.rjy=~BrickPi.SensorI2CIn[I2C_PORT][0][5]+129
-	
+
 	#Show button values
 	def show_val(self):
 		print "ljb","rjb","d","c","b","a","l2","r2","l1","r1","tri","cir","cro","sqr","ljx","ljy","rjx","rjy"
 		print self.ljb," ",self.rjb," ",self.d,self.c,self.b,self.a,self.l2,"",self.r2,"",self.l1,"",self.r1,"",self.tri," ",self.cir," ",self.cro," ",self.sqr," ",self.ljx," ",self.ljy," ",self.rjx," ",self.rjy
 		print ""
 
-	
+
 def BrickPiChangeAddress(OldAddr, NewAddr):
     Array[BYTE_MSG_TYPE] = MSG_TYPE_CHANGE_ADDR;
     Array[BYTE_NEW_ADDRESS] = NewAddr;
@@ -234,10 +237,10 @@ def BrickPiSetTimeout():
 			return -1
 		i+=1
 	return 0
-		
+
 def motorRotateDegree(power,deg,port,sampling_time=.1):
 	"""Rotate the selected motors by specified degre
-	
+
 	Args:
 		power		: an array of the power values at which to rotate the motors (0-255)
 		deg		: an array of the angle's (in degrees) by which to rotate each of the motor
@@ -249,29 +252,29 @@ def motorRotateDegree(power,deg,port,sampling_time=.1):
 
 	Usage:
 		Pass the arguments in a list. if a single motor has to be controlled then the arguments should be
-		passed like elements of an array,e.g, motorRotateDegree([255],[360],[PORT_A]) or 
+		passed like elements of an array,e.g, motorRotateDegree([255],[360],[PORT_A]) or
 		motorRotateDegree([255,255],[360,360],[PORT_A,PORT_B])
 	"""
 
 	num_motor=len(power)		#Number of motors being used
 	init_val=[0]*num_motor
 	final_val=[0]*num_motor
-	BrickPiUpdateValues()  
+	BrickPiUpdateValues()
 	for i in range(num_motor):
 		BrickPi.MotorEnable[port[i]] = 1				#Enable the Motors
 		power[i]=abs(power[i])
 		BrickPi.MotorSpeed[port[i]] = power[i] if deg[i]>0 else -power[i]	#For running clockwise and anticlockwise
-		init_val[i]=BrickPi.Encoder[port[i]]				#Initial reading of the encoder	
+		init_val[i]=BrickPi.Encoder[port[i]]				#Initial reading of the encoder
 		final_val[i]=init_val[i]+(deg[i]*2)				#Final value when the motor has to be stopped;One encoder value counts for 0.5 degrees
 	run_stat=[0]*num_motor
 	while True:
 		result = BrickPiUpdateValues()  				#Ask BrickPi to update values for sensors/motors
-	    	if not result : 
+	    	if not result :
 			for i in range(num_motor):				#Do for each of the motors
 				if run_stat[i]==1:
 					continue
 				if(deg[i]>0 and final_val[i]>init_val[i]) or (deg[i]<0 and final_val[i]<init_val[i]) :	#Check if final value reached for each of the motors
-	                   		init_val[i]=BrickPi.Encoder[port[i]]    		#Read the encoder degrees  	
+	                   		init_val[i]=BrickPi.Encoder[port[i]]    		#Read the encoder degrees
 				else:
 					run_stat[i]=1
 					BrickPi.MotorSpeed[port[i]]=-power[i] if deg[i]>0 else power[i]	#Run the motors in reverse direction to stop instantly
@@ -283,7 +286,7 @@ def motorRotateDegree(power,deg,port,sampling_time=.1):
 		if(all(e==1 for e in run_stat)):				#If all the motors have already completed their rotation, then stop
 			break
 	return 0
-	
+
 def GetBits( byte_offset, bit_offset, bits):
     global Bit_Offset
     result = 0
@@ -420,7 +423,7 @@ def BrickPiUpdateValues():
         result, BytesReceived, InArray = BrickPiRx(0.007500) #check timeout
         for j in range(len(InArray)):
             Array[j]=InArray[j]
-        
+
         if result != -2 :
             BrickPi.EncoderOffset[(i * 2) + PORT_A] = 0
             BrickPi.EncoderOffset[(i * 2) + PORT_B] = 0
@@ -429,7 +432,7 @@ def BrickPiUpdateValues():
             if 'DEBUG' in globals():
                 if DEBUG == 1:
                     print "BrickPiRx Error :", result
-            
+
             if Retried < 2 :
                 ret = True
                 Retried += 1
@@ -445,7 +448,7 @@ def BrickPiUpdateValues():
         ret = False
         Bit_Offset = 0
 
-        Temp_BitsUsed = [] 
+        Temp_BitsUsed = []
         Temp_BitsUsed.append(GetBits(1,0,5))
         Temp_BitsUsed.append(GetBits(1,0,5))
 
@@ -476,7 +479,7 @@ def BrickPiUpdateValues():
                     if (BrickPi.Sensor[port] & ( 0x01 << device)) :
                         for in_byte in range(BrickPi.SensorI2CRead[port][device]):
                             BrickPi.SensorI2CIn[port][device][in_byte] = GetBits(1,0,8)
-            else:   #For all the light, color and raw sensors 
+            else:   #For all the light, color and raw sensors
                 BrickPi.Sensor[ii + (i * 2)] = GetBits(1,0,10)
 
         i += 1
@@ -491,7 +494,7 @@ def BrickPiSetup():
         return -1
     return 0
 
-	
+
 def BrickPiTx(dest, ByteCount, OutArray):
     tx_buffer = ''
     tx_buffer+=chr(dest)
@@ -505,31 +508,31 @@ def BrickPiTx(dest, ByteCount, OutArray):
 def BrickPiRx(timeout):
     rx_buffer = ''
     ser.timeout=0
-    ot = time.time() 
+    ot = time.time()
 
     while( ser.inWaiting() <= 0):
-        if time.time() - ot >= timeout : 
+        if time.time() - ot >= timeout :
             return -2, 0 , []
-    
+
     if not ser.isOpen():
         return -1, 0 , []
-    
+
     try:
         while ser.inWaiting():
             rx_buffer += ( ser.read(ser.inWaiting()) )
             #time.sleep(.000075)
     except:
         return -1, 0 , []
-    
+
     RxBytes=len(rx_buffer)
-    
+
     if RxBytes < 2 :
         return -4, 0 , []
 
     if RxBytes < ord(rx_buffer[1])+2 :
         return -6, 0 , []
 
-    CheckSum = 0 
+    CheckSum = 0
     for i in rx_buffer[1:]:
         CheckSum += ord(i)
 
@@ -541,4 +544,4 @@ def BrickPiRx(timeout):
 
     InBytes = RxBytes - 2
 
-    return 0, InBytes, InArray 
+    return 0, InBytes, InArray

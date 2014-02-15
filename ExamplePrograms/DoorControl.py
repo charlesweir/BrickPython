@@ -5,13 +5,13 @@
 # The door is attached to a motor, which opens it by moving through 90 degrees, and closes it the same way.
 # The sensor is mounted above the door, so it detects approaching 'peaple'.
 
-from Application import *
+from TkApplication import *
 
 
-class DoorControlApp(Application):
+class DoorControlApp(TkApplication):
 
     def __init__(self):
-        Application.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
+        TkApplication.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
         self.sensorActive = True
         self.addSensorCoroutine( self.openDoorWhenSensorDetected() )
 
@@ -42,7 +42,7 @@ class DoorControlApp(Application):
             print "Door closed"
 
     def onKeyPress(self, event):
-        if Application.onKeyPress(self, event):
+        if TkApplication.onKeyPress(self, event):
             return
 
         char = event.char

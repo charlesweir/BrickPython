@@ -1,6 +1,6 @@
 # James and Charles Weir
 
-# Application to control a lego NXT motor as a servo motor.
+# TkApplication to control a lego NXT motor as a servo motor.
 #
 # Type keystrokes into the application window to make the motor move:
 # Numbers 0-9 make it move forward the corresponding number of quarter-turns.
@@ -13,13 +13,13 @@
 #   Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
 
 
-from Application import *
+from TkApplication import *
 
 
-class MyApp(Application):
+class MyApp(TkApplication):
 
     def __init__(self):
-        Application.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
+        TkApplication.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
 
     def rotate(self, degrees):
         self.stopAllCoroutines()
@@ -36,7 +36,7 @@ class MyApp(Application):
         self.addActionCoroutine( co )
 
     def onKeyPress(self, event):
-        if Application.onKeyPress(self, event):
+        if TkApplication.onKeyPress(self, event):
             return
 
         char = event.char
