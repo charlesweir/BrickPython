@@ -34,7 +34,7 @@ class TkApplication(BrickPiWrapper):
         self.root.bind('<KeyPress>', self.onKeyPress)
 
 
-    # The main loop for the application - call this after initialisation.  Returns on exit.
+    # The main loop for the application - call this after initialization.  Returns on exit.
     def mainloop(self):
         self.root.mainloop()
 
@@ -44,6 +44,7 @@ class TkApplication(BrickPiWrapper):
         self.root.after(int(self.timeMillisToNextCall()), self.timerTick)
 
     # Default key press handling - answers True if it's handled the key.
+    # Override this function to add extra keypress handling.
     def onKeyPress(self, event):
         char = event.char
         if char == "": # Key such as shift or control...
