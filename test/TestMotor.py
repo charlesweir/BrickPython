@@ -11,7 +11,7 @@
 
 
 
-from BrickPiWrapper import *
+from BrickPython.BrickPiWrapper import *
 import unittest
 from mock import *
 

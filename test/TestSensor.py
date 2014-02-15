@@ -11,11 +11,11 @@
 
 
 
-from BrickPiWrapper import *
 import unittest
-from Sensor import *
+from BrickPython.BrickPiWrapper import *
+from BrickPython.Sensor import *
 
-class SensorTests(unittest.TestCase):
+class TestSensor(unittest.TestCase):
     global Sensor
 
     def testSensor(self):

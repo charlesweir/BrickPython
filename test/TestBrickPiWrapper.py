@@ -11,10 +11,11 @@
 
 
 
-from BrickPiWrapper import *
+from BrickPython.BrickPiWrapper import *
+from BrickPython.Sensor import *
 import unittest
 from mock import *
-from Sensor import *
+
 
 
 class TestBrickPiWrapper(unittest.TestCase):

@@ -5,7 +5,7 @@
 # The door is attached to a motor, which opens it by moving through 90 degrees, and closes it the same way.
 # The sensor is mounted above the door, so it detects approaching 'peaple'.
 
-from TkApplication import *
+from BrickPython.TkApplication import *
 
 
 class DoorControlApp(TkApplication):

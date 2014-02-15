@@ -13,7 +13,7 @@
 #   Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
 
 
-from TkApplication import *
+from BrickPython.TkApplication import *
 
 
 class MyApp(TkApplication):
