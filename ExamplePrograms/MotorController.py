@@ -12,7 +12,7 @@
 #   Y,y increase and decrease the 'speed multiplier' - the D setting (I think).
 #   Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
 
-
+import sortOutPythonPaths
 from BrickPython.TkApplication import *
 
 
