@@ -39,10 +39,10 @@
 
 import time
 import os
-if os.uname()[4].startswith("arm"):
+if os.uname()[4].startswith("arm"): # If we're on a Raspberry Pi
     from serial import *
     ser = Serial()
-else:
+else:                               # Mock out the serial port - it seems to work.
     from mock import *
     ser = Mock()
 
