@@ -19,14 +19,20 @@ class TkApplication(BrickPiWrapper):
     def __init__(self, sensorConfiguration):
         BrickPiWrapper.__init__(self, sensorConfiguration )
         self.root = tk.Tk()
-        self.root.geometry('300x200')
+
+        self.doInitialization()
+
         self.pidSetting = PIDSetting()
+        self.timerTick()
+        self.addUpdateCoroutine( self.updaterCoroutine() )
+
+    # Default initialization function with a simple window - override if you want something different
+    def doInitialization(self):
+        self.root.geometry('300x200')
         self.label = tk.Label(text="BrickPi")
         self.label.pack()
-        self.timerTick()
         self.root.bind('<KeyPress>', self.onKeyPress)
 
-        self.addUpdateCoroutine( self.updaterCoroutine() )
 
     # The main loop for the application - call this after initialisation.  Returns on exit.
     def mainloop(self):
