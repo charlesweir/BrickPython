@@ -231,6 +231,19 @@ class TestScheduler(unittest.TestCase):
         for i in range(1,10):
             scheduler.doWork()
 
+    def testTheWaitForCoroutine(self):
+        scheduler = Scheduler()
+        arrayParameter = []
+        # When we create a WaitFor coroutine with a function that takes one parameter (actually an array)
+        coroutine = scheduler.waitFor( lambda ap: len(ap) > 0, arrayParameter )
+        # It runs
+        for i in range(0,5):
+            coroutine.next()
+        # Until the function returns true.
+        arrayParameter.append(1)
+        TestScheduler.checkCoroutineFinished( coroutine )
+
+
 if __name__ == '__main__':
     unittest.main()
 

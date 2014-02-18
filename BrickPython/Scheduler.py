@@ -10,11 +10,11 @@ class StopCoroutineException( Exception ):
 ProgramStartTime = datetime.datetime.now()
 
 class Scheduler():
-    
+
     # Public members:
     #    latestSensorCoroutine - the most recent sensor/control coroutine to have been added.
     #    latestActionCoroutine - the most recent motor control coroutine to have been added.
-    
+
     # Answers the time in ms since program start.
     @staticmethod
     def currentTimeMillis():
@@ -27,7 +27,7 @@ class Scheduler():
     def nullCoroutine():
         while True:
             yield
-    
+
     def __init__(self, timeMillisBetweenWorkCalls = 20):
         self.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []
@@ -49,7 +49,7 @@ class Scheduler():
             except Exception as e:
                 print "Got exception: ", e
                 self.coroutines.remove( coroutine )
-                    
+
         self.updateCoroutine.next()
 
     # Private: Wait time before the next doWork call should be called.
@@ -89,11 +89,11 @@ class Scheduler():
     # Number of active coroutines
     def numCoroutines( self ):
         return len(self.coroutines)
-    
+
     # Answers whether any of the given coroutines are still executing
     def stillRunning( self, *coroutineList ):
         return any( c in self.coroutines for c in coroutineList )
-    
+
 
     # Coroutine that executes the given coroutines until the first completes, then stops the others and finishes.
     def runTillFirstCompletes( self, *coroutineList ):
@@ -107,7 +107,7 @@ class Scheduler():
                     print "Got exception: ", e
                     return
             yield
-    
+
     # Coroutine that executes the given coroutines until all have completed.
     def runTillAllComplete(self, *coroutineList ):
         coroutines = list( coroutineList )
@@ -132,3 +132,7 @@ class Scheduler():
     def withTimeout( self, timeoutMillis, coroutine ):
         return self.runTillFirstCompletes( coroutine, self.doWait( timeoutMillis ) )
 
+    # Coroutine that waits until the given function (with optional parameters) returns True.
+    def waitFor(self, function, *args ):
+        while not function(*args):
+            yield
