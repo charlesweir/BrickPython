@@ -133,14 +133,14 @@ class TestScheduler(unittest.TestCase):
         # When we start a motor coroutine (starts at 2) and a sensor one (starts at 1)
         sensorCo = TestScheduler.dummyCoroutine()
         motorCo = TestScheduler.dummyCoroutine(2)
-        self.scheduler.addActionCoroutine(motorCo)
-        self.scheduler.addSensorCoroutine(sensorCo)
-        # Then the 'latest coroutine' of each time will be set correctly:
-        assert( self.scheduler.latestActionCoroutine == motorCo )
-        assert( self.scheduler.latestSensorCoroutine == sensorCo )
+        motorCoReturned = self.scheduler.addActionCoroutine(motorCo)
+        sensorCoReturned = self.scheduler.addSensorCoroutine(sensorCo)
+        # Then the 'latest coroutine' of each time will be returned correctly:
+        self.assertEquals( motorCoReturned, motorCo )
+        self.assertEquals( sensorCoReturned, sensorCo )
         # and the motor coroutine will update the status last:
         self.scheduler.doWork()
-        assert( TestScheduler.coroutineCalls[-1] == 2 )
+        self.assertEquals( TestScheduler.coroutineCalls[-1], 2 )
 
     def testUpdateCoroutineGetsCalledBothBeforeAndAfterTheOtherCoroutines(self):
         # When we start a motor and sensor coroutines (start at 1,4) with an update one (starts at 10)
