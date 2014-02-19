@@ -11,12 +11,13 @@
 
 
 
-from BrickPython.BrickPiWrapper import *
+from BrickPython.BrickPiWrapper import BrickPiWrapper, StopCoroutineException
 import unittest
-from mock import *
+from mock import Mock
 
 
 class TestMotor(unittest.TestCase):
+    ''' Tests for the Motor class, especially for PID Servo Motor functionality'''
     def setUp(self):
         self.bp = BrickPiWrapper()
         motor = self.motor = self.bp.motor( 'A' )

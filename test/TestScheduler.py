@@ -1,7 +1,7 @@
-# Test for BrickPiWrapper
+# Test for Scheduler
 
 # Run tests as
-#   python Test.py
+#   python TestScheduler.py
 # or, if you've got it installed:
 #   nosetests
 
@@ -16,6 +16,8 @@ import unittest
 from mock import *
 
 class TestScheduler(unittest.TestCase):
+    ''' Tests for the Scheduler class, its built-in coroutines, and its coroutine handling.
+    '''
     coroutineCalls = []
     @staticmethod
     def dummyCoroutine(start = 1, finish = 5):
@@ -46,6 +48,7 @@ class TestScheduler(unittest.TestCase):
 
     @staticmethod
     def checkCoroutineFinished(coroutine):
+        # Fails the test if the given coroutine hasn't finished.
         try:
             coroutine.next()
             assert(False)
@@ -215,6 +218,7 @@ class TestScheduler(unittest.TestCase):
         assert( scheduler.numCoroutines() == 4 )
 
     def timeCheckerCoroutine(self):
+        # Helper coroutine for testEachCallToACoroutineGetsADifferentTime
         time = Scheduler.currentTimeMillis()
         while True:
             yield

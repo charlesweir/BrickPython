@@ -1,22 +1,11 @@
-# Test for BrickPiWrapper
-
-# Run tests as
-#   python Test.py
-# or, if you've got it installed:
-#   nosetests
-
-# Install mock and nosetests on pi or mac using:
-#   sudo easy_install nose
-#   sudo easy_install mock
-
-
+# Test for Sensor
 
 import unittest
-from BrickPython.BrickPiWrapper import *
-from BrickPython.Sensor import *
+from BrickPython.BrickPiWrapper import PORT_1
+from BrickPython.Sensor import Sensor
 
 class TestSensor(unittest.TestCase):
-    global Sensor
+    'Test for the Sensor object'
 
     def testSensor(self):
         sensor = Sensor( PORT_1 )
