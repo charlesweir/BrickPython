@@ -1,27 +1,33 @@
 # James and Charles Weir
 
-# TkApplication to control a lego NXT motor as a servo motor.
-#
-# Type keystrokes into the application window to make the motor move:
-# Numbers 0-9 make it move forward the corresponding number of quarter-turns.
-# Lower case letters a-p make it go backward the corresponding number of quarter turns.
-# Capital letter A stops the motor.
-# Capital letters B-G make it go forward at a constant speed.  B is a quarter turn per second, C a half turn, and so on.
-# Letters xyz and XYZ adjust the settings for the PID Servo Motor algorithm:
-#   X,x increase and decrease the 'distance multiplier' - the P setting.
-#   Y,y increase and decrease the 'speed multiplier' - the D setting (I think).
-#   Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
+#Kludge to add the directory above this to the PYTHONPATH:
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
 
-import sortOutPythonPaths
 from BrickPython.TkApplication import *
+from BrickPython.Motor import PIDSetting
 
 
-class MyApp(TkApplication):
+class MotorControllerApp(TkApplication):
+    '''Application to control a lego NXT motor on port A as a servo motor.
+
+    Type keystrokes into the application window to make the motor move:
+    Numbers 0-9 make it move forward the corresponding number of quarter-turns.
+    Lower case letters a-p make it go backward the corresponding number of quarter turns.
+    Capital letter A stops the motor.
+    Capital letters B-G make it go forward at a constant speed.  B is a quarter turn per second, C a half turn, and so on.
+    Letters xyz and XYZ adjust the settings for the PID Servo Motor algorithm:
+      X,x increase and decrease the 'distance multiplier' - the P setting.
+      Y,y increase and decrease the 'speed multiplier' - the D setting (I think).
+      Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
+    '''
 
     def __init__(self):
         TkApplication.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
+        self.pidSetting = PIDSetting()
 
     def rotate(self, degrees):
+        'Rotate motor A through *degrees*'
         self.stopAllCoroutines()
         motor = self.motor('A')
         print "Rotating motor A %d degrees" % degrees
@@ -29,6 +35,7 @@ class MyApp(TkApplication):
         self.addActionCoroutine( co )
 
     def setSpeed(self, speed):
+        'Set the speed of motor A'
         self.stopAllCoroutines()
         motor = self.motor('A')
         print "Speed for motor A %.2f" % speed
@@ -36,6 +43,7 @@ class MyApp(TkApplication):
         self.addActionCoroutine( co )
 
     def onKeyPress(self, event):
+        'Handle user keystroke'
         if TkApplication.onKeyPress(self, event):
             return
 
@@ -68,5 +76,5 @@ class MyApp(TkApplication):
 
 if __name__ == "__main__":
     print "Starting"
-    app = MyApp()
+    app = MotorControllerApp()
     app.mainloop()

@@ -5,15 +5,17 @@
 import Tkinter as tk
 
 from BrickPiWrapper import *
-from Motor import *
-
 
 # TODO: How to stop two coroutines running at once on the same port?
 
-# Main application class.  I'm not usually keen on multiple inheritance, but it makes using it much simpler.
-
-
 class TkApplication(BrickPiWrapper):
+    '''
+    Main application class using the Tk toolkit.  Implements the regular calls required by the scheduler.
+
+    The default implementation creates a simple small window which
+    exits when it receives the 'Q' key, but this can be changed by overriding the doInitialization() method.
+
+    '''
 
     # Parameter: Configuration, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT } as passed to BrickPiWrapper
     def __init__(self, sensorConfiguration):
@@ -22,9 +24,7 @@ class TkApplication(BrickPiWrapper):
 
         self.doInitialization()
 
-        self.pidSetting = PIDSetting()
         self.timerTick()
-        self.addUpdateCoroutine( self.updaterCoroutine() )
 
     # Default initialization function with a simple window - override if you want something different
     def doInitialization(self):
