@@ -25,7 +25,7 @@ class BrickPiWrapper(Scheduler):
             BrickPi.SensorType[port] = portTypes[port]
         BrickPiSetupSensors()       #Send the properties of sensors to BrickPi
 
-        self.addUpdateCoroutine( self.updaterCoroutine() )
+        self.setUpdateCoroutine( self.updaterCoroutine() )
 
     def motor( self, which ):
         '''Answers the corresponding motor, e.g. motor('A')

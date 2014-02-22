@@ -147,7 +147,7 @@ class TestScheduler(unittest.TestCase):
 
     def testUpdateCoroutineGetsCalledBothBeforeAndAfterTheOtherCoroutines(self):
         # When we start a motor and sensor coroutines (start at 1,4) with an update one (starts at 10)
-        self.scheduler.addUpdateCoroutine(TestScheduler.dummyCoroutine(10,20))
+        self.scheduler.setUpdateCoroutine(TestScheduler.dummyCoroutine(10,20))
         self.scheduler.addSensorCoroutine(TestScheduler.dummyCoroutine(4,8))
         self.scheduler.addActionCoroutine(TestScheduler.dummyCoroutine())
         # then the update coroutine will be invoked before and after the others:
@@ -230,7 +230,7 @@ class TestScheduler(unittest.TestCase):
     def testEachCallToACoroutineGetsADifferentTime(self):
         scheduler = Scheduler()
         # For any coroutine,
-        scheduler.addUpdateCoroutine( self.timeCheckerCoroutine() )
+        scheduler.setUpdateCoroutine( self.timeCheckerCoroutine() )
         # We can guarantee that the timer always increments between calls (for speed calculations etc).
         for i in range(1,10):
             scheduler.doWork()

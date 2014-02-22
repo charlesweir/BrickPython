@@ -71,7 +71,7 @@ class Scheduler():
         self.coroutines.extend( coroutineList )
         return coroutineList[-1]
 
-    def addUpdateCoroutine(self, coroutine):
+    def setUpdateCoroutine(self, coroutine):
         # Private - set the coroutine that manages the interaction with the BrickPi.
         # The coroutine will be invoked once at the start and once at the end of each doWork call.
         self.updateCoroutine = coroutine

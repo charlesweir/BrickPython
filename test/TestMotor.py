@@ -11,7 +11,8 @@
 
 
 
-from BrickPython.BrickPiWrapper import BrickPiWrapper, StopCoroutineException
+from BrickPython.BrickPiWrapper import BrickPiWrapper
+from BrickPython.Scheduler import Scheduler, StopCoroutineException
 import unittest
 from mock import Mock
 
@@ -134,11 +135,13 @@ class TestMotor(unittest.TestCase):
         motor = self.motor
         # When we use the other name for the operation
         generator = motor.moveTo( 10 )
-        # and invoke the scheduler while the motor moves to the position
+        # and invoke the scheduler - disabling normal update processing - while the motor moves to the position
+        self.bp.setUpdateCoroutine(Scheduler.nullCoroutine())
         positions = [0,5,11,10,10,10]
         for i in range(len(positions)):
             motor.updatePosition( positions[i] )
             self.bp.doWork()
+            print motor
         # Then we complete correctly
         self.assertFalse( self.bp.stillRunning( generator ))
         self.assertEquals( motor.position(), 10 )

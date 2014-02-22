@@ -65,6 +65,9 @@ class Motor():
     def speed(self):
         return self.currentTP.averageSpeedFrom( self.previousTP )
 
+    def __repr__(self):
+        return "Motor %s (location=%d, speed=%f)" % (self.idChar, self.position(), self.speed())
+
     def updatePosition(self, newPosition):
         self.previousTP = self.currentTP
         self.currentTP = TimePosition( self.timeMillis(), newPosition - self.basePosition )
