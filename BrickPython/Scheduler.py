@@ -1,7 +1,6 @@
 
 # Scheduler.  To be called repeatedly by the UI or other framework.
 import datetime
-import sys
 
 class StopCoroutineException( Exception ):
     '''Exception used to stop a coroutine:'''
@@ -86,7 +85,7 @@ class Scheduler():
                 self.coroutines.remove( coroutine )
 
     def stopAllCoroutines(self):
-        'Terminate all coroutines (except the updater one) - use with care, of course!'
+        'Terminate all coroutines (except the updater one) - rather drastic!'
         self.stopCoroutine(*self.coroutines[:]) # Makes a copy of the list - don't want to be changing it.
 
     def numCoroutines( self ):

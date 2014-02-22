@@ -5,6 +5,7 @@
 import Tkinter as tk
 
 from BrickPiWrapper import *
+import logging
 
 # TODO: How to stop two coroutines running at once on the same port?
 
@@ -50,6 +51,7 @@ class TkApplication(BrickPiWrapper):
         if char == "": # Key such as shift or control...
             pass
         elif(char=='q'):
+            logging.info( "Application terminated")
             self.root.destroy()
         else:
             return False

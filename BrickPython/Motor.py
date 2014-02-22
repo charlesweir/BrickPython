@@ -3,6 +3,7 @@
 
 import datetime
 from Scheduler import *
+import logging
 
 class PIDSetting():
     def __init__(self,distanceMultiplier=0.9,speedMultiplier=0.23,sumDistanceMultiplier=0.05):
@@ -44,7 +45,7 @@ class Motor():
         self.currentTP = self.previousTP = TimePosition(0, self.timeMillis())
         self.scheduler = scheduler
         self.basePosition = 0
-    
+
     def setPIDSetting( self, pidSetting ):
         self.pidSetting = pidSetting
     def setPower(self, p):
@@ -57,47 +58,51 @@ class Motor():
         return self._enabled
     def enable(self, whether):
         self._enabled = whether
-    
+
     def zeroPosition(self):
         self.basePosition += self.position()
-    
+
     def speed(self):
         return self.currentTP.averageSpeedFrom( self.previousTP )
-    
+
     def updatePosition(self, newPosition):
         self.previousTP = self.currentTP
         self.currentTP = TimePosition( self.timeMillis(), newPosition - self.basePosition )
 
     def moveTo( self, *args ):
         return self.positionUsingPIDAlgorithm( *args )
-    
+
     def positionUsingPIDAlgorithm( self, target, timeoutMillis = 3000 ):
         return self.scheduler.withTimeout( timeoutMillis, self.positionUsingPIDAlgorithmWithoutTimeout( target ) )
-    
+
+
+    def stopAndDisable(self):
+        self.setPower(0)
+        self.enable(False)
+        logging.info("Motor %s stopped" % (self.idChar))
+
     def positionUsingPIDAlgorithmWithoutTimeout( self, target ):
         sumDistance = 0 # Sum of all the distances (=I bit of PID ).
         self.enable(True)
-        print "Motor %s moving to %d" % (self.idChar, target)
+        logging.info( "Motor %s moving to %d" % (self.idChar, target) )
         try:
             while True:
                 delta = (target - self.currentTP.position)
                 sumDistance += delta
                 speed = self.speed()
-                
+
                 if abs(delta) <= 4 and abs(speed) < 10.0:
                     break
-                        
+
                 power = (self.pidSetting.distanceMultiplier * delta
                          - self.pidSetting.speedMultiplier * speed
                          + self.pidSetting.sumDistanceMultiplier * sumDistance )
                 self.setPower( power )
 
                 yield
-    
+
         finally:
-            self.setPower( 0 )
-            self.enable( False )
-            print "Motor stopped"
+            self.stopAndDisable()
 
 
     def setSpeed( self, targetSpeedInClicksPerSecond, timeoutMillis = 3000 ):
@@ -109,7 +114,7 @@ class Motor():
         if targetSpeedInClicksPerSecond < 0:
             power = -power
         self.enable(True)
-        print "Motor %s moving at constant speed %.3f" % (self.idChar, targetSpeedInClicksPerSecond)
+        logging.info( "Motor %s moving at constant speed %.3f" % (self.idChar, targetSpeedInClicksPerSecond) )
         try:
             while abs(targetSpeedInClicksPerSecond - 0.0) > speedErrorMargin: # Don't move if the target speed is zero.
                 speed = self.speed()
@@ -120,11 +125,9 @@ class Motor():
                 elif abs(speed) > abs(targetSpeedInClicksPerSecond):
                     power /= 1.1
                 self.setPower( power )
-                         
+
                 yield
 
         finally:
-            self.setPower( 0 )
-            self.enable( False )
-            print "Motor stopped"
+            self.stopAndDisable()
 

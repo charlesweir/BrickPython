@@ -1,12 +1,9 @@
 # James and Charles Weir
 
-#Kludge to add the directory above this to the PYTHONPATH:
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
-
+import sortOutPythonPaths
 from BrickPython.TkApplication import *
 from BrickPython.Motor import PIDSetting
-
+import logging
 
 class MotorControllerApp(TkApplication):
     '''Application to control a lego NXT motor on port A as a servo motor.
@@ -30,7 +27,7 @@ class MotorControllerApp(TkApplication):
         'Rotate motor A through *degrees*'
         self.stopAllCoroutines()
         motor = self.motor('A')
-        print "Rotating motor A %d degrees" % degrees
+        logging.info( "Rotating motor A %d degrees" % degrees )
         co = motor.moveTo( motor.position() + degrees*2 )
         self.addActionCoroutine( co )
 
@@ -38,7 +35,7 @@ class MotorControllerApp(TkApplication):
         'Set the speed of motor A'
         self.stopAllCoroutines()
         motor = self.motor('A')
-        print "Speed for motor A %.2f" % speed
+        logging.info( "Speed for motor A %.2f" % speed )
         co = motor.runAtConstantSpeed( speed )
         self.addActionCoroutine( co )
 
@@ -71,10 +68,11 @@ class MotorControllerApp(TkApplication):
                 self.pidSetting.sumDistanceMultiplier *= 1.1
             elif char == 'Z':
                 self.pidSetting.sumDistanceMultiplier /= 1.1
-            print "%r" % (self.pidSetting)
+            logging.info( "%r" % (self.pidSetting) )
             self.motor('A').setPIDSetting( self.pidSetting )
 
 if __name__ == "__main__":
-    print "Starting"
+    logging.basicConfig(format='%(message)s', level=logging.INFO) # Logging is a simple print
+    logging.info( "Starting" )
     app = MotorControllerApp()
     app.mainloop()

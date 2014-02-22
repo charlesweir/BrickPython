@@ -9,9 +9,12 @@ Welcome to BrickPython's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   	:maxdepth: 2
 
-   Scheduler
+   	BrickPiWrapper
+	Scheduler
+	Motor
+	TkApplication
 
 
 

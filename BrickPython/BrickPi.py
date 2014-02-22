@@ -38,6 +38,7 @@
 
 
 import time
+import logging
 import os
 if os.uname()[4].startswith("arm"): # If we're on a Raspberry Pi
     from serial import *
@@ -429,9 +430,7 @@ def BrickPiUpdateValues():
             BrickPi.EncoderOffset[(i * 2) + PORT_B] = 0
 
         if (result or (Array[BYTE_MSG_TYPE] != MSG_TYPE_VALUES)):
-            if 'DEBUG' in globals():
-                if DEBUG == 1:
-                    print "BrickPiRx Error :", result
+            logging.debug( "BrickPiRxError: %d" % result )
 
             if Retried < 2 :
                 ret = True
@@ -439,9 +438,7 @@ def BrickPiUpdateValues():
                 #print "Retry", Retried
                 continue
             else:
-                if 'DEBUG' in globals():
-                    if DEBUG == 1:
-                        print "Retry Failed"
+                logging.debug("BrickPiRx - all retried failed")
                 return -1
 
 

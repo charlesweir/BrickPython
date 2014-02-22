@@ -1,11 +1,9 @@
 # James and Charles Weir
 
 
-#Kludge to add the directory above this to the PYTHONPATH:
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
-
+import sortOutPythonPaths
 from BrickPython.TkApplication import *
+import logging
 
 class DoorControlApp(TkApplication):
     '''Application to automatically open and close a door using a proximity sensor.
@@ -35,22 +33,22 @@ class DoorControlApp(TkApplication):
             while sensor1.value() > 8 or self.doorLocked:
                 yield
 
-            print "Opening - sensor 1 value is ", sensor1.value()
+            logging.info( "Opening - sensor 1 value is %d" % sensor1.value() )
             for i in motorA.moveTo( -2*90, 2000 ):
                 if self.doorLocked: break
                 yield
 
 
-            print "Waiting 4 seconds"
+            logging.info( "Waiting 4 seconds" )
             for i in self.doWait( 4000 ):
                 if self.doorLocked: break
                 yield
 
-            print "Shutting door"
+            logging.info( "Shutting door" )
             for i in motorA.moveTo( 0, 2000 ):
                 yield
 
-            print "Door closed"
+            logging.info( "Door closed" )
 
     def onKeyPress(self, event):
         'Handle key input from the user'
@@ -59,16 +57,17 @@ class DoorControlApp(TkApplication):
 
         char = event.char
         if char in 'Cc':
-            print "Closing and disabling door now"
+            logging.info( "Closing and disabling door now" )
             self.doorLocked = True
 
         elif char in 'SsOo':
-            print "Re-activating door"
+            logging.info( "Re-activating door" )
             self.doorLocked = False
 
 
 
 if __name__ == "__main__":
-    print "Starting"
+    logging.basicConfig(format='%(message)s', level=logging.INFO) # All log messages printed to console.
+    logging.info( "Starting" )
     app = DoorControlApp()
     app.mainloop()
