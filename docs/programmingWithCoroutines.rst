@@ -47,6 +47,19 @@ We could, of course, add extra code between C and D - for example to check a sen
 Composing Coroutines
 --------------------
 
-We can also combine coroutines.  The `Scheduler` methods `runTillFirstCompletes` and `runTillAllComplete` 
+We can also combine coroutines.
 
+The coroutine method `Scheduler.runTillFirstCompletes` creates a new coroutine from
+a list of coroutines and terminates them all (and itself) when the first completes.  The coroutine method `Scheduler.runTillAllComplete`
+similarly runs until all of a list of coroutines complete.
+
+The `Scheduler.withTimeout` coroutine method adds a timeout to a coroutine, terminating it if it hasn't completed after
+the given timeout.
+
+Ready-made coroutines
+---------------------
+
+`Scheduler.waitFor` answers a coroutine that terminates when a given function returns true.
+
+`Motor.moveTo` and `Motor.setSpeed` are coroutines that control a motor.
 

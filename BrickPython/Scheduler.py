@@ -23,21 +23,15 @@ class Scheduler():
         c = datetime.datetime.now() - ProgramStartTime
         return c.days * (3600.0 * 1000 * 24) + c.seconds * 1000.0 + c.microseconds / 1000.0
 
-
-    @staticmethod
-    def nullCoroutine():
-        # Noop coroutine - does nothing
-        while True:
-            yield
-
     def __init__(self, timeMillisBetweenWorkCalls = 20):
+
         self.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []
         self.timeOfLastCall = Scheduler.currentTimeMillis()
         self.updateCoroutine = self.nullCoroutine() # for testing - usually replaced.
 
     def doWork(self):
-        # Private: Executes all the coroutines, handling exceptions.
+        'Executes all the coroutines, handling exceptions'
 
         timeNow = Scheduler.currentTimeMillis()
         if timeNow == self.timeOfLastCall: # Ensure each call gets a different timer value.
@@ -56,7 +50,7 @@ class Scheduler():
         self.updateCoroutine.next()
 
     def timeMillisToNextCall(self):
-        # Private: Wait time before the next doWork call should be called.
+        'Wait time before the next doWork call should be called.'
         timeRequired = self.timeMillisBetweenWorkCalls + self.timeOfLastCall - Scheduler.currentTimeMillis()
         return max( timeRequired, 0 )
 
@@ -79,7 +73,7 @@ class Scheduler():
         self.updateCoroutine = coroutine
 
     def stopCoroutine( self, *coroutineList ):
-        'Terminate the given one or more coroutines'
+        'Terminates the given one or more coroutines'
         for coroutine in coroutineList:
             try:
                 coroutine.throw(StopCoroutineException)
@@ -87,7 +81,7 @@ class Scheduler():
                 self.coroutines.remove( coroutine )
 
     def stopAllCoroutines(self):
-        'Terminate all coroutines (except the updater one) - rather drastic!'
+        'Terminates all coroutines (except the updater one) - rather drastic!'
         self.stopCoroutine(*self.coroutines[:]) # Makes a copy of the list - don't want to be changing it.
 
     def numCoroutines( self ):
@@ -98,7 +92,18 @@ class Scheduler():
         'Answers whether any of the given coroutines are still executing'
         return any( c in self.coroutines for c in coroutineList )
 
-    def runTillFirstCompletes( self, *coroutineList ):
+    #############################################################################################
+    #                 Coroutines
+    #############################################################################################
+
+    @staticmethod
+    def nullCoroutine():
+        'Null coroutine - runs forever and does nothing'
+        while True:
+            yield
+
+    @staticmethod
+    def runTillFirstCompletes( *coroutineList ):
         'Coroutine that executes the given coroutines until the first completes, then stops the others and finishes.'
         while True:
             for coroutine in coroutineList:
@@ -111,7 +116,8 @@ class Scheduler():
                     return
             yield
 
-    def runTillAllComplete(self, *coroutineList ):
+    @staticmethod
+    def runTillAllComplete(*coroutineList ):
         'Coroutine that executes the given coroutines until all have completed.'
         coroutines = list( coroutineList )
         while coroutines != []:
@@ -125,17 +131,20 @@ class Scheduler():
                     return
             yield
 
-    def doWait( self, timeMillis ):
+    @staticmethod
+    def timeoutCoroutine( timeMillis ):
         'Coroutine that waits for timeMillis, then finishes.'
         t = Scheduler.currentTimeMillis()
         while Scheduler.currentTimeMillis() - t < timeMillis:
             yield
 
-    def withTimeout( self, timeoutMillis, coroutine ):
+    @staticmethod
+    def withTimeout( timeoutMillis, *coroutineList ):
         'Coroutine that wraps the given coroutine with a timeout'
-        return self.runTillFirstCompletes( coroutine, self.doWait( timeoutMillis ) )
+        return Scheduler.runTillFirstCompletes( Scheduler.timeoutCoroutine( timeoutMillis ), *coroutineList )
 
-    def waitFor(self, function, *args ):
+    @staticmethod
+    def waitFor(function, *args ):
         'Coroutine that waits until the given function (with optional parameters) returns True.'
         while not function(*args):
             yield

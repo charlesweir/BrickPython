@@ -155,9 +155,9 @@ class TestScheduler(unittest.TestCase):
         assert( TestScheduler.coroutineCalls == [10,4,1,11] )
 
     @patch("TestScheduler.Scheduler.currentTimeMillis", Mock( side_effect = range(0,20) ) )
-    def testDoWait(self):
+    def testTimeoutCoroutine(self):
         # If we wait for 10 ms
-        for i in self.scheduler.doWait(10):
+        for i in self.scheduler.timeoutCoroutine(10):
             pass
         # that's about the time that will have passed:
         assert( self.scheduler.currentTimeMillis() in range(10,12) )
