@@ -18,8 +18,9 @@ class TkApplication(BrickPiWrapper):
 
     '''
 
-    # Parameter: Configuration, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT } as passed to BrickPiWrapper
-    def __init__(self, sensorConfiguration):
+    def __init__(self, sensorConfiguration={}):
+        '''Initialization: *sensorConfiguration* is a map, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT }
+        as passed to BrickPiWrapper'''
         BrickPiWrapper.__init__(self, sensorConfiguration )
         self.root = tk.Tk()
 
@@ -27,26 +28,26 @@ class TkApplication(BrickPiWrapper):
 
         self.timerTick()
 
-    # Default initialization function with a simple window - override if you want something different
     def doInitialization(self):
+        'Default initialization function with a simple window - override if you want something different'
         self.root.geometry('300x200')
         self.label = tk.Label(text="BrickPi")
         self.label.pack()
         self.root.bind('<KeyPress>', self.onKeyPress)
 
 
-    # The main loop for the application - call this after initialization.  Returns on exit.
     def mainloop(self):
+        'The main loop for the application - call this after initialization.  Returns on exit.'
         self.root.mainloop()
 
-    # Private: Does all the coroutine processing, every 20ms or so.
     def timerTick(self):
+        # Private: Does all the coroutine processing, every 20ms or so.
         self.doWork()
         self.root.after(int(self.timeMillisToNextCall()), self.timerTick)
 
-    # Default key press handling - answers True if it's handled the key.
-    # Override this function to add extra keypress handling.
     def onKeyPress(self, event):
+        '''Default key press handling - answers True if it's handled the key.
+        Override this function to add extra keypress handling. '''
         char = event.char
         if char == "": # Key such as shift or control...
             pass

@@ -5,27 +5,25 @@ This describes the BrickPython API in detail.
 
 :mod:`Scheduler` Module
 -----------------------
-
-.. autoclass:: Scheduler.Scheduler
-.. autoexception:: Scheduler.StopCoroutineException
+.. automodule:: Scheduler
 
 
 :mod:`BrickPiWrapper` Module
 ----------------------------
-.. autoclass:: BrickPiWrapper.BrickPiWrapper
+.. automodule:: BrickPiWrapper
 
 
 :mod:`TkApplication` Module
 ----------------------------
-.. autoclass:: TkApplication.TkApplication
+.. automodule:: TkApplication
 
 
 :mod:`Motor` Module
 ----------------------------
-.. autoclass:: Motor.Motor
-.. autoclass:: Motor.PIDSetting
+.. automodule:: Motor
+
 
 :mod:`Sensor` Module
 ----------------------------
-.. autoclass:: Sensor.Sensor
+.. automodule:: Sensor
 
