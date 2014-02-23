@@ -8,12 +8,12 @@ A simple example
 
 Here's a simple application, from ``ExamplePrograms/SimpleApp.py``::
 
-	from BrickPython.TkApplication import *
+	from BrickPython.CommandLineApplication import *
 
-	class SimpleApp(TkApplication):
+	class SimpleApp(CommandLineApplication):
 	    def __init__(self):
-	        TkApplication.__init__(self)
-	        self.addSensorCoroutine( self.doActivity() ) #A
+	        CommandLineApplication.__init__(self)
+	        self.addSensorCoroutine( self.doActivity() )  #A
 
 	    def doActivity(self):
 	    	'Coroutine to rotate a motor forward and backward'
@@ -28,6 +28,8 @@ Here's a simple application, from ``ExamplePrograms/SimpleApp.py``::
 
 	if __name__ == "__main__":
 	    SimpleApp().mainloop()
+
+It uses the simplest scheduler - the CommandLineApplication.
 
 Line A creates a coroutine from the coroutine method doActivity() and adds it to the scheduler.   A coroutine must have
 one or more `yield` calls, such as the one at line D, and the scheduler can then call it using 'next()'

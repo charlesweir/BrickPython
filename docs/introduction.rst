@@ -118,6 +118,8 @@ Other Integrations
 Integrations with other frameworks, or non at all, are equally straightforward.   The framework must call the
 method Scheduler.doWork regularly, pausing for Scheduler.timeMillisToNextCall() after each call.
 
+For example `CommandLineApplication` provides a scheduler for applications that don't require user input.
+
 Motors and Sensors
 ==================
 

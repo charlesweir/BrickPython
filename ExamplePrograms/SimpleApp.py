@@ -2,11 +2,11 @@
 
 
 import sortOutPythonPaths
-from BrickPython.TkApplication import *
+from BrickPython.CommandLineApplication import *
 
-class SimpleApp(TkApplication):
+class SimpleApp(CommandLineApplication):
     def __init__(self):
-        TkApplication.__init__(self)
+        CommandLineApplication.__init__(self)
         self.addSensorCoroutine( self.doActivity() )
 
     def doActivity(self):
@@ -14,9 +14,10 @@ class SimpleApp(TkApplication):
         motorA = self.motor('A')
         motorA.zeroPosition()
         while True:
+            print 'a'
             for i in motorA.moveTo( 2*90 ):
                 yield
-
+            print 'b'
             for i in motorA.moveTo( 0 ):
                 yield
 

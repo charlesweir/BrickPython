@@ -3,27 +3,32 @@ BrickPython API
 
 This describes the BrickPython API in detail.
 
-:mod:`Scheduler` Module
------------------------
+:mod:`Scheduler`
+----------------
 .. automodule:: Scheduler
 
 
-:mod:`BrickPiWrapper` Module
-----------------------------
+:mod:`BrickPiWrapper`
+---------------------
 .. automodule:: BrickPiWrapper
 
 
-:mod:`TkApplication` Module
-----------------------------
+:mod:`TkApplication`
+--------------------
 .. automodule:: TkApplication
 
 
-:mod:`Motor` Module
-----------------------------
+:mod:`CommandLineApplication`
+-----------------------------
+.. automodule:: CommandLineApplication
+
+
+:mod:`Motor`
+------------
 .. automodule:: Motor
 
 
-:mod:`Sensor` Module
-----------------------------
+:mod:`Sensor`
+-------------
 .. automodule:: Sensor
 
