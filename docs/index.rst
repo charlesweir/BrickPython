@@ -16,6 +16,8 @@ Contents:
 	Motor
 	TkApplication
 
+	DoorControl
+	MotorController
 
 
 
