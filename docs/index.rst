@@ -11,14 +11,9 @@ Contents:
 .. toctree::
    	:maxdepth: 2
 
-   	BrickPiWrapper
-	Scheduler
-	Motor
-	TkApplication
-
-	DoorControl
-	MotorController
-
+	introduction
+	programmingWithCoroutines
+   	BrickPython
 
 
 

@@ -62,12 +62,14 @@ class Scheduler():
 
 
     def addSensorCoroutine(self, *coroutineList):
-        'Add one or more new sensor/program coroutines to be scheduled, answering the last one to be added.'
+        '''Adds one or more new sensor/program coroutines to be scheduled, answering the last one to be added.
+        Sensor coroutines are scheduled *before* Action coroutines'''
         self.coroutines[0:0] = coroutineList
         return coroutineList[-1]
 
     def addActionCoroutine(self, *coroutineList):
-        'Add one or more new motor control coroutines to be scheduled, answering the last coroutine to be added.'
+        '''Adds one or more new motor control coroutines to be scheduled, answering the last coroutine to be added.
+        Action coroutines are scheduled *after* Sensor coroutines'''
         self.coroutines.extend( coroutineList )
         return coroutineList[-1]
 
