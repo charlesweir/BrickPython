@@ -1,5 +1,5 @@
 =============
-Using Sandman
+Programming with Coroutines
 =============
 
 The Simplest Application

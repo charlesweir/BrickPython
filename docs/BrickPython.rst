@@ -1,11 +1,13 @@
 BrickPython API
 ===============
 
+This describes the BrickPython API in detail.
 
 :mod:`Scheduler` Module
 -----------------------
 
 .. autoclass:: Scheduler.Scheduler
+.. autoexception:: Scheduler.StopCoroutineException
 
 
 :mod:`BrickPiWrapper` Module

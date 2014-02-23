@@ -3,7 +3,7 @@
 import datetime
 
 class StopCoroutineException( Exception ):
-    '''Exception used to stop a coroutine:'''
+    '''Exception used to stop a coroutine'''
     pass
 
 ProgramStartTime = datetime.datetime.now()
