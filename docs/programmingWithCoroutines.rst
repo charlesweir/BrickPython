@@ -29,13 +29,14 @@ Here's a simple application, from ``ExamplePrograms/SimpleApp.py``::
 	if __name__ == "__main__":
 	    SimpleApp().mainloop()
 
-It uses the simplest scheduler - the CommandLineApplication.
+It uses the simplest scheduler: the `CommandLineApplication`.
 
-Line A creates a coroutine from the coroutine method doActivity() and adds it to the scheduler.   A coroutine must have
-one or more `yield` calls, such as the one at line D, and the scheduler can then call it using 'next()'
-- see, for example https://wiki.python.org/moin/Generators
+Line A creates a coroutine from the coroutine method doActivity() and adds it to the scheduler.   A coroutine method must have
+one or more `yield` calls, such as the one at line D, so that calling the method returns a coroutine
+which the scheduler can invoke using 'next()'.
+For more about such 'generator functions', see https://wiki.python.org/moin/Generators
 
-To properly leverage coroutines, we want to be able to call other coroutines, and wait until they've finished.
+To get the most benefit from coroutines we want to be able to call other coroutines, and to wait until they've finished.
 Lines C,D show how this is done.   `motorA.moveTo(2*90)` is itself a coroutine - one that implements the Servo motor
 PID algorithm - and we can call it using Python's 'iteration'::
 
@@ -52,7 +53,8 @@ Composing Coroutines
 We can also combine coroutines.
 
 The coroutine method `Scheduler.runTillFirstCompletes` creates a new coroutine from
-a list of coroutines and terminates them all (and itself) when the first completes.  The coroutine method `Scheduler.runTillAllComplete`
+a list of coroutines and terminates them all (and itself) when the first completes.
+The coroutine method `Scheduler.runTillAllComplete`
 similarly runs until all of a list of coroutines complete.
 
 The `Scheduler.withTimeout` coroutine method adds a timeout to a coroutine, terminating it if it hasn't completed after
