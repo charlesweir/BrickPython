@@ -38,9 +38,10 @@ For more about such 'generator functions', see https://wiki.python.org/moin/Gene
 
 To get the most benefit from coroutines we want to be able to call other coroutines, and to wait until they've finished.
 Lines C,D show how this is done.   `motorA.moveTo(2*90)` is itself a coroutine - one that implements the Servo motor
-PID algorithm - and we can call it using Python's 'iteration'::
+PID algorithm - and thus we can invoke it using Python's iteration syntax::
 
-	for i in coroutine(): yield
+	for i in coroutine():
+	    yield
 
 The dummy variable `i` is ignored.
 
