@@ -40,7 +40,7 @@ class DoorControlApp(TkApplication):
 
 
             logging.info( "Waiting 4 seconds" )
-            for i in self.doWait( 4000 ):
+            for i in self.waitMilliseconds( 4000 ):
                 if self.doorLocked: break
                 yield
 

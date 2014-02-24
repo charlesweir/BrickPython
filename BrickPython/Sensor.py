@@ -1,4 +1,8 @@
+# Sensor class
 
+#TODO: Remove need for clients to import * from BrickPython by
+# getting rid of the use of PORT_* values in the interfaces,
+# and duplicating TYPE_SENSOR_ULTRASONIC_CONT etc as static members of class Sensor.
 
 class Sensor():
     '''Sensor, representing a sensor attached to one of the BrickPi ports.'''

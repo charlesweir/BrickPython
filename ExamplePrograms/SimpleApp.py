@@ -15,10 +15,10 @@ class SimpleApp(CommandLineApplication):
         motorA = self.motor('A')
         motorA.zeroPosition()
         while True:
-            print 'a'
+            print 'Moving forward'
             for i in motorA.moveTo( 2*90 ):
                 yield
-            print 'b'
+            print 'Moving back'
             for i in motorA.moveTo( 0 ):
                 yield
 

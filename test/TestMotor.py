@@ -141,7 +141,6 @@ class TestMotor(unittest.TestCase):
         for i in range(len(positions)):
             motor.updatePosition( positions[i] )
             self.bp.doWork()
-            print motor
         # Then we complete correctly
         self.assertFalse( self.bp.stillRunning( generator ))
         self.assertEquals( motor.position(), 10 )
@@ -162,6 +161,9 @@ class TestMotor(unittest.TestCase):
         # and switch off the motor.
         assert( not motor.enabled() )
         assert( motor.power() == 0 )
+
+    def testMotorTextRepresentation(self):
+        self.assertRegexpMatches( repr(self.motor), 'Motor.*location=.*speed=.*')
 
 if __name__ == '__main__':
     unittest.main()

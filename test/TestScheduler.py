@@ -59,6 +59,13 @@ class TestScheduler(unittest.TestCase):
     def setUp(self):
         TestScheduler.coroutineCalls = []
         self.scheduler = Scheduler()
+        # Yes - we can use @Patch to do the following for specific tests, but that fails horribly when
+        # tests are run as python setup.py test
+        self.saveCurrentTimeMillis = Scheduler.currentTimeMillis
+        Scheduler.currentTimeMillis =  Mock( side_effect = xrange(0,10000) ) # Each call answers the next integer
+
+        def tearDown(self):
+            Scheduler.currentTimeMillis = self.saveCurrentTimeMillis
 
     def testCoroutinesGetCalledUntilDone(self):
         # When we start a motor coroutine
@@ -154,10 +161,9 @@ class TestScheduler(unittest.TestCase):
         self.scheduler.doWork()
         assert( TestScheduler.coroutineCalls == [10,4,1,11] )
 
-    @patch("TestScheduler.Scheduler.currentTimeMillis", Mock( side_effect = range(0,20) ) )
-    def testTimeoutCoroutine(self):
+    def testWaitMilliseconds(self):
         # If we wait for 10 ms
-        for i in self.scheduler.timeoutCoroutine(10):
+        for i in self.scheduler.waitMilliseconds(10):
             pass
         # that's about the time that will have passed:
         assert( self.scheduler.currentTimeMillis() in range(10,12) )
@@ -181,7 +187,6 @@ class TestScheduler(unittest.TestCase):
         assert( TestScheduler.coroutineCalls == [1,1,1,2,2,3] )
         assert( self.scheduler.numCoroutines() == 0)
 
-    @patch("TestScheduler.Scheduler.currentTimeMillis", Mock( side_effect = range(0,999) ) )
     def testWithTimeout(self):
         # When we run a coroutine with a timeout:
         for i in self.scheduler.withTimeout(10, TestScheduler.dummyCoroutineThatDoesCleanup(1,99) ):
@@ -191,7 +196,6 @@ class TestScheduler(unittest.TestCase):
         self.assertTrue( 0 < TestScheduler.coroutineCalls[-2] <= 10) # N.b. currentTimeMillis is called more than once per doWork call.
         self.assertEquals( TestScheduler.coroutineCalls[-1], -1 )
 
-    @patch("TestScheduler.Scheduler.currentTimeMillis", Mock( side_effect = range(0,100) ) )
     def testTimeMillisToNextCall(self):
         # Given a mock timer, and a different scheduler set up with a known time interval
         scheduler = Scheduler(20)
@@ -219,6 +223,7 @@ class TestScheduler(unittest.TestCase):
 
     def timeCheckerCoroutine(self):
         # Helper coroutine for testEachCallToACoroutineGetsADifferentTime
+        # Checks that each call gets a different time value.
         time = Scheduler.currentTimeMillis()
         while True:
             yield
@@ -226,9 +231,9 @@ class TestScheduler(unittest.TestCase):
             self.assertNotEquals( newTime, time )
             time = newTime
 
-    @patch("TestScheduler.Scheduler.currentTimeMillis", Mock( side_effect = [0,0,0,0,0,0,0,0,0,0,1,2,3,4,5] ) )
     def testEachCallToACoroutineGetsADifferentTime(self):
         scheduler = Scheduler()
+        Scheduler.currentTimeMillis =  Mock( side_effect = [0,0,0,0,0,0,0,0,0,0,1,2,3,4,5] )
         # For any coroutine,
         scheduler.setUpdateCoroutine( self.timeCheckerCoroutine() )
         # We can guarantee that the timer always increments between calls (for speed calculations etc).

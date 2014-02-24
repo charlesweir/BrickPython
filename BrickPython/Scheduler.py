@@ -132,7 +132,7 @@ class Scheduler():
             yield
 
     @staticmethod
-    def timeoutCoroutine( timeMillis ):
+    def waitMilliseconds( timeMillis ):
         'Coroutine that waits for timeMillis, then finishes.'
         t = Scheduler.currentTimeMillis()
         while Scheduler.currentTimeMillis() - t < timeMillis:
@@ -141,7 +141,7 @@ class Scheduler():
     @staticmethod
     def withTimeout( timeoutMillis, *coroutineList ):
         'Coroutine that wraps the given coroutine with a timeout'
-        return Scheduler.runTillFirstCompletes( Scheduler.timeoutCoroutine( timeoutMillis ), *coroutineList )
+        return Scheduler.runTillFirstCompletes( Scheduler.waitMilliseconds( timeoutMillis ), *coroutineList )
 
     @staticmethod
     def waitFor(function, *args ):
