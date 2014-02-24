@@ -87,7 +87,7 @@ To make our coroutines work, we need something that coordinates them, and manage
 :class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (50 times per second), and provides methods to manage them:
 starting and stopping them, combining them, and supporting features such as timeouts for a coroutine.
 
-When the :class:`.Scheduler` stops a coroutine, the coroutine receives a :exception:`.StopCoroutineException`; catching this allows the coroutine to tidy up properly.
+When the :class:`.Scheduler` stops a coroutine, the coroutine receives a :class:`.StopCoroutineException`; catching this allows the coroutine to tidy up properly.
 
 The class :class:`.BrickPiWrapper` extends the :class:`.Scheduler` to manage the BrickPi interaction, managing the :class:`.Motor` and :class:`.Sensor` objects, calling the BrickPi twice
 for every work call (once before, and once after all the coroutines have run), taking data from and subsequently updating all
@@ -116,7 +116,7 @@ Other Integrations
 ==================
 
 Integrations with other frameworks, or non at all, are equally straightforward.   The framework must call the
-method Scheduler.doWork regularly, pausing for Scheduler.timeMillisToNextCall() after each call.
+method :meth:`.Scheduler.doWork()` regularly, pausing for :meth:`Scheduler.timeMillisToNextCall()` after each call.
 
 For example :class:`.CommandLineApplication` provides a scheduler for applications that don't require user input.
 
