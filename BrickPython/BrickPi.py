@@ -1,3 +1,5 @@
+# From project brickpi_python, with small amendments to support BrickPython.
+
 # Jaikrishna
 # Karan Nayan
 # John Cole
