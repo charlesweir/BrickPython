@@ -38,17 +38,6 @@ def find_version(*file_paths):
 
 long_description = read('README.rst')
 
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['--strict', '--verbose', '--tb=long', 'test/TestSensor.py', 'test/TestMotor.py', 'test/TestScheduler.py', 'test/TestBrickPiWrapper.py']
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
-
 setup(
     name='BrickPython',
     version=find_version('BrickPython', '__init__.py'),
@@ -57,13 +46,13 @@ setup(
     author='Charles Weir',
     tests_require=['pytest'],
     install_requires=[],
-    cmdclass={'test': PyTest},
+#     cmdclass={'test': PyTest},
     author_email='charles@penrillian.com',
     description='Python interface for the BrickPi using Objects and Coroutines',
     long_description=long_description,
     entry_points={
         },
-    packages=['BrickPython','test'],
+    packages=['BrickPython', 'ExamplePrograms','test'],
     include_package_data=True,
     platforms='any',
     test_suite='test',
@@ -81,7 +70,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks'
         ],
     extras_require={
-        'testing': ['pytest'],
+        'testing': ['pytest', 'mock'],
       },
 	#install_requires=open('requirements.txt').readlines()  # It doesn't need it for Mac.
 )

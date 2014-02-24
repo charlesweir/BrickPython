@@ -14,7 +14,7 @@ Contents:
 	introduction
 	programmingWithCoroutines
    	BrickPython
-
+	ExamplePrograms
 
 
 Indices and tables

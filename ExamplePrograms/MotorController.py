@@ -14,9 +14,9 @@ class MotorControllerApp(TkApplication):
     Capital letter A stops the motor.
     Capital letters B-G make it go forward at a constant speed.  B is a quarter turn per second, C a half turn, and so on.
     Letters xyz and XYZ adjust the settings for the PID Servo Motor algorithm:
-      X,x increase and decrease the 'distance multiplier' - the P setting.
-      Y,y increase and decrease the 'speed multiplier' - the D setting (I think).
-      Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
+    * X,x increase and decrease the 'distance multiplier' - the P setting.
+    * Y,y increase and decrease the 'speed multiplier' - the D setting (I think).
+    * Z,z increase and decrease the 'Integrated distance multimplier' - the I setting.
     '''
 
     def __init__(self):

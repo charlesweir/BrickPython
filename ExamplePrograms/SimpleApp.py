@@ -5,6 +5,7 @@ import sortOutPythonPaths
 from BrickPython.CommandLineApplication import *
 
 class SimpleApp(CommandLineApplication):
+    'Simple command line example application'
     def __init__(self):
         CommandLineApplication.__init__(self)
         self.addSensorCoroutine( self.doActivity() )
