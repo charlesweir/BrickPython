@@ -62,7 +62,7 @@ setup(
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
-        'Environment :: Raspberry Pi',
+#        'Environment :: Raspberry Pi',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
