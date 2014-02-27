@@ -116,7 +116,7 @@ Other Integrations
 ==================
 
 Integrations with other frameworks, or non at all, are equally straightforward.   The framework must call the
-method :meth:`.Scheduler.doWork()` regularly, pausing for :meth:`Scheduler.timeMillisToNextCall()` after each call.
+method :meth:`.Scheduler.doWork()` regularly, pausing for :meth:`.Scheduler.timeMillisToNextCall()` after each call.
 
 For example :class:`.CommandLineApplication` provides a scheduler for applications that don't require user input.
 
@@ -141,7 +141,7 @@ Example Applications
 Test Code
 =========
 
-Finally, there are unit tests for all of the code here.  If you have it installed, run::
+Finally, there are unit tests for all of the code here.  If you have ``nosetests`` installed, run::
 
 	nosetests
 
