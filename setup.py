@@ -3,17 +3,6 @@
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 # (http://creativecommons.org/licenses/by-sa/3.0/)
 
-# import setuptools
-#
-# setuptools.setup(
-# 	name="BrickPython",
-# 	description="Python structure for the BrickPi",
-# 	author="Charles and James Weir",
-# 	url="http://www.charlesweir.com/",
-# 	py_modules=['BrickPython'],
-# 	test_suite='test'
-# 	#install_requires=open('requirements.txt').readlines(),
-# )
 
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
@@ -41,10 +30,10 @@ long_description = read('README.rst')
 setup(
     name='BrickPython',
     version=find_version('BrickPython', '__init__.py'),
-#     url='http://github.com/jeffknupp/sandman/',
-    license='Apache Software License',
+    url='https://github.com/charlesweir/BrickPython',
+    license='MIT License',
     author='Charles Weir',
-    tests_require=['pytest'],
+    tests_require=['pytest', 'mock'],
     install_requires=[],
 #     cmdclass={'test': PyTest},
     author_email='charles@penrillian.com',
@@ -57,14 +46,14 @@ setup(
     platforms='any',
     test_suite='test',
     zip_safe=False,
-#     package_data={'BrickPython': ['templates/**', 'static/*/*']},
+#    package_data={'BrickPython': ['templates/**', 'static/*/*']},
     classifiers = [
         'Programming Language :: Python',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
 #        'Environment :: Raspberry Pi',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Libraries :: Application Frameworks'
