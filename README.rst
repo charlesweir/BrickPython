@@ -2,11 +2,11 @@
 BrickPython
 ===========
 
-.. # image:: https://badge.fury.io/py/{{ cookiecutter.repo_name }}.png
-    :target: http://badge.fury.io/py/{{ cookiecutter.repo_name }}
+.. image:: https://badge.fury.io/py/BrickPython.png
+    :target: http://badge.fury.io/py/BrickPython
 
-.. # image:: https://travis-ci.org/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}.png?branch=master
-        :target: https://travis-ci.org/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}
+.. # image:: https://travis-ci.org/{{ cookiecutter.github_username }}/BrickPython.png?branch=master
+        :target: https://travis-ci.org/{{ cookiecutter.github_username }}/BrickPython
 
 .. image:: https://pypip.in/d/BrickPython/badge.png
         :target: https://crate.io/packages/BrickPython?version=latest
@@ -26,13 +26,11 @@ Features
 * Simple objects representing Motor and Sensor
 * Implementation of Python coroutines and scheduler for Python 2.7
 * Uses Brickpi.py from BrickPi_python
-* Implementation of PID algorithm to make NXT motor be a servo-motor
-* Implementation of motor constant speed algorithm
+* Implementation of PID algorithm to make an NXT motor into a servo-motor
+* Implementation of an NXT motor constant speed algorithm
 * Full unit test suite
 * Runs on other Linux environments (Mac etc) for unit tests and development.
 
 
 .. TODO: Links to Coroutine presentation.
-   TODO: Better motivation.
-   TODO: Discussion of OS X environment
 
