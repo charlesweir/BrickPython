@@ -75,10 +75,11 @@ allows a function to go 'on hold' while other processing happens.
 
 Strictly speaking, what this package supports aren't true coroutines: a 'true' coroutine has its own stack, so
 that if a coroutine function calls another function that calls 'yield', that would still work.
-Python doesn't support that, but
-we have ways around the problem.
+Python doesn't support that, but we have ways around the problem.
 
 Python 3.4 will have better support for coroutines - see http://docs.python.org/3.4/library/asyncio.html .
+
+I'm grateful for David Beazley his tutorial on Python coroutines: http://dabeaz.com/coroutines/ .
 
 The Scheduler
 =============
