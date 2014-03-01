@@ -1,1 +1,2 @@
-__version__ = '0.1.1'
+# Change version numbers here and in docs/conf.py:
+__version__ = '0.2'

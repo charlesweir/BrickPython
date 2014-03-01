@@ -1,3 +1,7 @@
+.. README.rst project overview for PyPi
+..
+..	Check using rst2html.py README.rst README.html
+
 ===========
 BrickPython
 ===========
