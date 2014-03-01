@@ -137,6 +137,15 @@ Example Applications
 * :class:`.DoorControl` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
   on user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
 
+Other Environments
+==================
+
+To help with development, this package also runs on other environments.  It's been tested on Mac OS X, but should run on
+any Python environment.  In non-RaspberryPi environments, it replaces the hardware connections with a 'mock'
+serial connection, with the result that it ignores motor settings and always returns default values (0)
+for sensors and motor positions.
+
+In particular, all the unit tests will run on any environment.
 
 Test Code
 =========
