@@ -1,9 +1,12 @@
+# sortOutPythonPaths
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
+
 '''
 Horrible bit of munging to persuade Python to look for modules on directories above us.
 Only necessary when not installed as a package.
 
-See the (last) Sept 10 2012 comment on http://as.ynchrono.us/2007/12/filesystem-structure-of-python-project_21.html 
-@author: charles
+See the (last) Sept 10 2012 comment on http://as.ynchrono.us/2007/12/filesystem-structure-of-python-project_21.html
 '''
 
 import sys, os

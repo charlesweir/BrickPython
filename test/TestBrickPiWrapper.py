@@ -1,7 +1,9 @@
-# Test for BrickPiWrapper
+# Tests for BrickPiWrapper
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 # Run tests as
-#   python Test.py
+#   python TestBrickPiWrapper.py
 # or, if you've got it installed:
 #   nosetests
 

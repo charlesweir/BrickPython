@@ -1,6 +1,8 @@
-# TkApplication class.  Brings together the Tk GUI functionality, the Scheduler and the BrickPi wrapper.
+# TkApplication class.  Superclass for applications using the Tkinter framework
+#
 # Applications using the BrickPi derive from this, implementing appropriate functionality.
-
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import Tkinter as tk
 

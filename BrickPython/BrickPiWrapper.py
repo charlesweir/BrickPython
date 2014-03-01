@@ -1,5 +1,7 @@
-
 # Wrapper class for the BrickPi() structure provided with the installation.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
+
 from Motor import Motor
 from Sensor import Sensor
 from BrickPi import *

@@ -1,8 +1,7 @@
+# Changes Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 # -*- coding: utf-8 -*-
 #
 # BrickPython documentation build configuration file, created by
-# sphinx-quickstart on Wed Feb 19 21:21:42 2014.
-#
 # This file is execfile()d with the current directory set to its
 # containing dir.
 #

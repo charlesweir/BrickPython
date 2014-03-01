@@ -1,5 +1,7 @@
-# James and Charles Weir
-
+# DoorControlApp
+# Example application to detect using a proximity sensor and open, close a door.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import sortOutPythonPaths
 from BrickPython.TkApplication import *

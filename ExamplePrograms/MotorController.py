@@ -1,4 +1,7 @@
-# James and Charles Weir
+# Motor Controller
+# Example application for using motors.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import sortOutPythonPaths
 from BrickPython.TkApplication import *

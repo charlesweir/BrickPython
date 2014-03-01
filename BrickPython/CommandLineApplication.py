@@ -1,6 +1,7 @@
 # CommandLineApplication class.  Provides a dummy scheduler for BrickPiWrapper.
 # Applications using the BrickPi derive from this, implementing appropriate functionality.
-
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import Tkinter as tk
 

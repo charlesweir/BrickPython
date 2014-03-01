@@ -1,3 +1,4 @@
+.. Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 BrickPython Example Programs
 ============================
 

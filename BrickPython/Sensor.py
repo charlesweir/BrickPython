@@ -1,4 +1,6 @@
-# Sensor class
+# Sensor - represents a single value sensor supported by the BrickPython library
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 #TODO: Remove need for clients to import * from BrickPython by
 # getting rid of the use of PORT_* values in the interfaces,

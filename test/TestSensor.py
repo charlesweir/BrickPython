@@ -1,4 +1,6 @@
-# Test for Sensor
+# Tests for Sensor
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import unittest
 from BrickPython.BrickPiWrapper import PORT_1

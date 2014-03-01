@@ -1,5 +1,6 @@
-# Simple example application for BrickPython.
-
+# Very simple example application for BrickPython.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import sortOutPythonPaths
 from BrickPython.CommandLineApplication import *
