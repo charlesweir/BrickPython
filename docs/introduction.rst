@@ -26,7 +26,7 @@ As a taster, here's a coroutine function to detect presence via a sensor, open a
             for i in motorA.moveTo( 0 ):
                 yield
 
-The actual implementation - which also supports user input to change the behavior at any time - is in ``ExamplePrograms/DoorControl.py``
+The actual implementation - which also supports user input to change the behavior at any time - is :class:`.DoorControlApp` in ``ExamplePrograms/DoorControl.py``
 
 Why Objects
 ===========
@@ -132,9 +132,9 @@ is set up via the initialization parameter to :class:`.BrickPiWrapper` (or :clas
 Example Applications
 ====================
 
-* :class:`.MotorController` is for experimenting with a motor connected to port A.  It supports varying the PID settings, and moving different distances or at constant speed.
+* :class:`.MotorControllerApp` is for experimenting with a motor connected to port A.  It supports varying the PID settings, and moving different distances or at constant speed.
 
-* :class:`.DoorControl` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
+* :class:`.DoorControlApp` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
   on user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
 
 Other Environments
