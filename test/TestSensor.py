@@ -24,11 +24,6 @@ class TestSensor(unittest.TestCase):
     def testSensorTextRepresentation(self):
         self.assertEquals( repr(Sensor( PORT_1 ) ), 'Sensor 1: [0]')
 
-    def testBetterSensorInitSyntax(self):
-        sensor = Sensor( '1' )
-        self.assertEquals(sensor.port, PORT_1)
-        self.assertEquals( sensor.idChar, '1' )
-        assert( sensor.value() == 0 )
 
 if __name__ == '__main__':
     unittest.main()

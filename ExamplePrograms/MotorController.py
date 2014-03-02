@@ -24,7 +24,7 @@ class MotorControllerApp(TkApplication):
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {'1': Sensor.TYPE_SENSOR_ULTRASONIC_CONT }) # Compiler doesn't know these types.
+        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT }) # Compiler doesn't know these types.
         self.pidSetting = PIDSetting()
 
     def rotate(self, degrees):

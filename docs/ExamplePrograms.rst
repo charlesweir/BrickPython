@@ -1,4 +1,5 @@
 .. Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
+
 BrickPython Example Programs
 ============================
 
@@ -17,4 +18,6 @@ This section describes the BrickPython examples.
 :mod:`SimpleApp`
 --------------------
 .. automodule:: SimpleApp
+
+
 

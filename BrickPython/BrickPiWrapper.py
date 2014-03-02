@@ -12,7 +12,7 @@ class BrickPiWrapper(Scheduler):
     This extends the Scheduler with functionality specific to the BrickPi
 
     The constructor takes a map giving the sensor type connected to each port: 1 through 5.
-        E.g. BrickPiWrapper( {'1': Sensor.TYPE_SENSOR_ULTRASONIC_CONT} )
+        E.g. BrickPiWrapper( {'1': Sensor.ULTRASONIC_CONT} )
 
     Motors and sensors are identified by their port names: motors are A to D; sensors 1 to 5.
     '''

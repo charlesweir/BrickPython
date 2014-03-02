@@ -8,21 +8,34 @@ class Sensor():
     '''Sensor, representing a sensor attached to one of the BrickPi ports.
     *port* may be either a PORT_ value or an integer '1'-'5'
 
-    There are class attributes with the types defined in the BrickPi module:
-        Sensor.TYPE_SENSOR_ULTRASONIC_CONT
-    These are configured in the initialization parameters to BrickPiWrapper (and derived classes)
-
+    There are class attributes with the types defined in the BrickPi module, e.g.
+        Sensor.ULTRASONIC_CONT
+    The sensor type for each port is configured in the initialization parameters to BrickPiWrapper (and derived classes)
     '''
+    RAW               = BrickPi.TYPE_SENSOR_RAW
+    LIGHT_OFF         = BrickPi.TYPE_SENSOR_LIGHT_OFF
+    LIGHT_ON          = BrickPi.TYPE_SENSOR_LIGHT_ON
+    TOUCH             = BrickPi.TYPE_SENSOR_TOUCH
+    ULTRASONIC_CONT   = BrickPi.TYPE_SENSOR_ULTRASONIC_CONT
+    ULTRASONIC_SS     = BrickPi.TYPE_SENSOR_ULTRASONIC_SS
+    RCX_LIGHT         = BrickPi.TYPE_SENSOR_RCX_LIGHT
+    COLOR_FULL        = BrickPi.TYPE_SENSOR_COLOR_FULL
+    COLOR_RED         = BrickPi.TYPE_SENSOR_COLOR_RED
+    COLOR_GREEN       = BrickPi.TYPE_SENSOR_COLOR_GREEN
+    COLOR_BLUE        = BrickPi.TYPE_SENSOR_COLOR_BLUE
+    COLOR_NONE        = BrickPi.TYPE_SENSOR_COLOR_NONE
+    I2C               = BrickPi.TYPE_SENSOR_I2C
+    I2C_9V            = BrickPi.TYPE_SENSOR_I2C_9V
 
     @staticmethod
     def portNumFromId(portNumOrIdChar):
-        # Answers the port number given either value.
+        # Answers the port number given either port number or the ID Char.
         if (not isinstance(portNumOrIdChar, int)):
             return int(portNumOrIdChar) - 1
         return portNumOrIdChar
 
     def __init__(self, port):
-        self.port = Sensor.portNumFromId(port)
+        self.port = port
         #: Character identifying the sensor: 1 through 5.
         self.idChar = chr(self.port + ord('1'))
         #: Array of the *maxRecentValues* most recent sensor readings
@@ -46,8 +59,3 @@ class Sensor():
     def __repr__(self):
         return "Sensor %s: %r" % (self.idChar, self.recentValues)
 
-# Put the sensor types (which are globals in BrickPi) to be attributes of Sensor
-
-for name in dir(BrickPi):
-    if name.startswith('TYPE_'):
-        setattr(Sensor, name, getattr(BrickPi, name))
