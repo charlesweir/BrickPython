@@ -129,7 +129,7 @@ The :class:`.Motor` class implements methods to record and calculate the current
 to position itself accurately to a couple of degrees.  There's also a 'constant speed' coroutine :meth:`.Motor.setSpeed()`.
 
 The :class:`.Sensor` class simply keeps a record, :attr:`.Sensor.recentValues`, of the last few readings; its method :meth:`.Sensor.value()` answers the most recent one.  The type of each sensor
-is set up via the initialization parameter to :class:`.BrickPiWrapper` (or :class:`.TkApplication`).
+is set up via the initialization parameter to :class:`.BrickPiWrapper` (via :class:`.TkApplication` or :class:`.CommandLineApplication`).
 
 Example Applications
 ====================

@@ -14,7 +14,8 @@
 
 
 from BrickPython.BrickPiWrapper import BrickPiWrapper
-from BrickPython.BrickPi import *
+from BrickPython.BrickPi import BrickPi, PORT_1, TYPE_SENSOR_ULTRASONIC_CONT
+from BrickPython.Sensor import Sensor
 import unittest
 
 
@@ -45,6 +46,9 @@ class TestBrickPiWrapper(unittest.TestCase):
         bp = BrickPiWrapper( {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT} )
         assert( BrickPi.SensorType[PORT_1] == TYPE_SENSOR_ULTRASONIC_CONT)
 
+    def testSensorSetupBetterScopingSyntax(self):
+        bp = BrickPiWrapper( {'1': Sensor.TYPE_SENSOR_ULTRASONIC_CONT} )
+        self.assertEquals( BrickPi.SensorType[PORT_1], TYPE_SENSOR_ULTRASONIC_CONT)
 
 if __name__ == '__main__':
     unittest.main()

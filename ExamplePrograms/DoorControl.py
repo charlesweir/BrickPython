@@ -4,7 +4,8 @@
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import sortOutPythonPaths
-from BrickPython.TkApplication import *
+from BrickPython.TkApplication import TkApplication
+from BrickPython.Sensor import Sensor
 import logging
 
 class DoorControlApp(TkApplication):
@@ -17,7 +18,7 @@ class DoorControlApp(TkApplication):
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
+        TkApplication.__init__(self, {'1': Sensor.TYPE_SENSOR_ULTRASONIC_CONT })  # Compiler doesn't know these types.
         self.doorLocked = False
         self.addSensorCoroutine( self.openDoorWhenSensorDetected() )
 

@@ -2,16 +2,29 @@
 #
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-#TODO: Remove need for clients to import * from BrickPython by
-# getting rid of the use of PORT_* values in the interfaces,
-# and duplicating TYPE_SENSOR_ULTRASONIC_CONT etc as static members of class Sensor.
+import BrickPi
 
 class Sensor():
-    '''Sensor, representing a sensor attached to one of the BrickPi ports.'''
+    '''Sensor, representing a sensor attached to one of the BrickPi ports.
+    *port* may be either a PORT_ value or an integer '1'-'5'
+
+    There are class attributes with the types defined in the BrickPi module:
+        Sensor.TYPE_SENSOR_ULTRASONIC_CONT
+    These are configured in the initialization parameters to BrickPiWrapper (and derived classes)
+
+    '''
+
+    @staticmethod
+    def portNumFromId(portNumOrIdChar):
+        # Answers the port number given either value.
+        if (not isinstance(portNumOrIdChar, int)):
+            return int(portNumOrIdChar) - 1
+        return portNumOrIdChar
+
     def __init__(self, port):
-        self.port = port
+        self.port = Sensor.portNumFromId(port)
         #: Character identifying the sensor: 1 through 5.
-        self.idChar = chr(port + ord('1'))
+        self.idChar = chr(self.port + ord('1'))
         #: Array of the *maxRecentValues* most recent sensor readings
         self.recentValues = [0]
         #: How many sensor readings to store
@@ -33,4 +46,8 @@ class Sensor():
     def __repr__(self):
         return "Sensor %s: %r" % (self.idChar, self.recentValues)
 
+# Put the sensor types (which are globals in BrickPi) to be attributes of Sensor
 
+for name in dir(BrickPi):
+    if name.startswith('TYPE_'):
+        setattr(Sensor, name, getattr(BrickPi, name))

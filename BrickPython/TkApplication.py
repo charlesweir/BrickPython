@@ -21,7 +21,7 @@ class TkApplication(BrickPiWrapper):
     '''
 
     def __init__(self, sensorConfiguration={}):
-        '''Initialization: *sensorConfiguration* is a map, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT }
+        '''Initialization: *sensorConfiguration* is a map, e.g. {'1': Sensor.TYPE_SENSOR_ULTRASONIC_CONT}
         as passed to BrickPiWrapper'''
         BrickPiWrapper.__init__(self, sensorConfiguration )
         self.root = tk.Tk()

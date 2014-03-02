@@ -14,3 +14,4 @@ python setup.py test
 echo '>> Upload docs to pypi from' `pwd`/docs/generated/Archive.zip
 echo '>> Form at the bottom of https://pypi.python.org/pypi?%3Aaction=pkg_edit&name=BrickPython'
 echo '>> To release module to pypi:  python setup.py sdist upload'
+echo '>> To install without releasing: pip install -e .'

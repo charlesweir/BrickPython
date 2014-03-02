@@ -3,10 +3,9 @@
 #
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-import Tkinter as tk
 
-from BrickPiWrapper import *
-import logging
+from BrickPiWrapper import BrickPiWrapper
+import time
 
 class CommandLineApplication(BrickPiWrapper):
     '''
@@ -14,7 +13,7 @@ class CommandLineApplication(BrickPiWrapper):
     '''
 
     def __init__(self, sensorConfiguration={}):
-        '''Initialization: *sensorConfiguration* is a map, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT }
+        '''Initialization: *sensorConfiguration* is a map, e.g. {'1': Sensor.TYPE_SENSOR_ULTRASONIC_CONT}
         as passed to BrickPiWrapper'''
         BrickPiWrapper.__init__(self, sensorConfiguration )
 
