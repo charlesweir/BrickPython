@@ -2,8 +2,10 @@
 #
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-import sortOutPythonPaths
-from BrickPython.CommandLineApplication import *
+import sys, os # Python path kludge - omit these 2 lines if BrickPython is installed.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
+
+from BrickPython.CommandLineApplication import CommandLineApplication
 
 class SimpleApp(CommandLineApplication):
     'Simple command line example application'

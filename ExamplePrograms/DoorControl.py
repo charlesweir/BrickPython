@@ -3,7 +3,9 @@
 #
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-import sortOutPythonPaths
+import sys, os # Python path kludge - omit these 2 lines if BrickPython is installed.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
+
 from BrickPython.TkApplication import TkApplication
 from BrickPython.Sensor import Sensor
 import logging
