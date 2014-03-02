@@ -6,10 +6,8 @@
 
 import Tkinter as tk
 
-from BrickPiWrapper import *
+from BrickPiWrapper import BrickPiWrapper
 import logging
-
-# TODO: How to stop two coroutines running at once on the same port?
 
 class TkApplication(BrickPiWrapper):
     '''
