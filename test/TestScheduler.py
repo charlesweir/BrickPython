@@ -1,13 +1,11 @@
-# Test for Scheduler
+# Tests for Scheduler
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 # Run tests as
 #   python TestScheduler.py
 # or, if you've got it installed:
 #   nosetests
-
-# Install mock and nosetests on pi or mac using:
-#   sudo easy_install nose
-#   sudo easy_install mock
 
 
 

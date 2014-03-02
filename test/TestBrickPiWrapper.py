@@ -1,7 +1,9 @@
-# Test for BrickPiWrapper
+# Tests for BrickPiWrapper
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 # Run tests as
-#   python Test.py
+#   python TestBrickPiWrapper.py
 # or, if you've got it installed:
 #   nosetests
 
@@ -12,7 +14,8 @@
 
 
 from BrickPython.BrickPiWrapper import BrickPiWrapper
-from BrickPython.BrickPi import *
+from BrickPython.BrickPi import BrickPi, PORT_1, TYPE_SENSOR_ULTRASONIC_CONT
+from BrickPython.Sensor import Sensor
 import unittest
 
 
@@ -43,6 +46,9 @@ class TestBrickPiWrapper(unittest.TestCase):
         bp = BrickPiWrapper( {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT} )
         assert( BrickPi.SensorType[PORT_1] == TYPE_SENSOR_ULTRASONIC_CONT)
 
+    def testSensorSetupBetterScopingSyntax(self):
+        bp = BrickPiWrapper( {'1': Sensor.ULTRASONIC_CONT} )
+        self.assertEquals( BrickPi.SensorType[PORT_1], TYPE_SENSOR_ULTRASONIC_CONT)
 
 if __name__ == '__main__':
     unittest.main()

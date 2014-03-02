@@ -1,8 +1,14 @@
-# James and Charles Weir
+# Motor Controller
+# Example application for using motors.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-import sortOutPythonPaths
-from BrickPython.TkApplication import *
+import sys, os # Python path kludge - omit these 2 lines if BrickPython is installed.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
+
+from BrickPython.TkApplication import TkApplication
 from BrickPython.Motor import PIDSetting
+from BrickPython.Sensor import Sensor
 import logging
 
 class MotorControllerApp(TkApplication):
@@ -20,7 +26,7 @@ class MotorControllerApp(TkApplication):
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT })
+        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT }) # Compiler doesn't know these types.
         self.pidSetting = PIDSetting()
 
     def rotate(self, degrees):

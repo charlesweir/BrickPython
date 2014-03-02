@@ -1,3 +1,4 @@
+.. Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 ===========================
 Introduction to BrickPython
 ===========================
@@ -26,7 +27,7 @@ As a taster, here's a coroutine function to detect presence via a sensor, open a
             for i in motorA.moveTo( 0 ):
                 yield
 
-The actual implementation - which also supports user input to change the behavior at any time - is in ``ExamplePrograms/DoorControl.py``
+The actual implementation - which also supports user input to change the behavior at any time - is :class:`.DoorControlApp` in ``ExamplePrograms/DoorControl.py``
 
 Why Objects
 ===========
@@ -74,10 +75,11 @@ allows a function to go 'on hold' while other processing happens.
 
 Strictly speaking, what this package supports aren't true coroutines: a 'true' coroutine has its own stack, so
 that if a coroutine function calls another function that calls 'yield', that would still work.
-Python doesn't support that, but
-we have ways around the problem.
+Python doesn't support that, but we have ways around the problem.
 
 Python 3.4 will have better support for coroutines - see http://docs.python.org/3.4/library/asyncio.html .
+
+I'm grateful for David Beazley his tutorial on Python coroutines: http://dabeaz.com/coroutines/ .
 
 The Scheduler
 =============
@@ -127,14 +129,14 @@ The :class:`.Motor` class implements methods to record and calculate the current
 to position itself accurately to a couple of degrees.  There's also a 'constant speed' coroutine :meth:`.Motor.setSpeed()`.
 
 The :class:`.Sensor` class simply keeps a record, :attr:`.Sensor.recentValues`, of the last few readings; its method :meth:`.Sensor.value()` answers the most recent one.  The type of each sensor
-is set up via the initialization parameter to :class:`.BrickPiWrapper` (or :class:`.TkApplication`).
+is set up via initialization parameters to :class:`.BrickPiWrapper` (via :class:`.TkApplication` or :class:`.CommandLineApplication`).
 
 Example Applications
 ====================
 
-* :class:`.MotorController` is for experimenting with a motor connected to port A.  It supports varying the PID settings, and moving different distances or at constant speed.
+* :class:`.MotorControllerApp` is for experimenting with a motor connected to port A.  It supports varying the PID settings, and moving different distances or at constant speed.
 
-* :class:`.DoorControl` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
+* :class:`.DoorControlApp` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
   on user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
 
 Other Environments

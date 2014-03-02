@@ -1,13 +1,13 @@
-# TkApplication class.  Brings together the Tk GUI functionality, the Scheduler and the BrickPi wrapper.
+# TkApplication class.  Superclass for applications using the Tkinter framework
+#
 # Applications using the BrickPi derive from this, implementing appropriate functionality.
-
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import Tkinter as tk
 
-from BrickPiWrapper import *
+from BrickPiWrapper import BrickPiWrapper
 import logging
-
-# TODO: How to stop two coroutines running at once on the same port?
 
 class TkApplication(BrickPiWrapper):
     '''
@@ -19,7 +19,7 @@ class TkApplication(BrickPiWrapper):
     '''
 
     def __init__(self, sensorConfiguration={}):
-        '''Initialization: *sensorConfiguration* is a map, e.g. {PORT_1: TYPE_SENSOR_ULTRASONIC_CONT }
+        '''Initialization: *sensorConfiguration* is a map, e.g. {'1': Sensor.ULTRASONIC_CONT}
         as passed to BrickPiWrapper'''
         BrickPiWrapper.__init__(self, sensorConfiguration )
         self.root = tk.Tk()

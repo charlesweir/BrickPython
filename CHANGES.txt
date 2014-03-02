@@ -1,0 +1,15 @@
+# BrickPython Changelog
+
+## BrickPython v0.2.1 (not yet released)
+
+- Added copyright and headers to all source files.
+- Sensor configuration no longer requires import * - old version still works.
+
+## BrickPython v0.2
+
+- Improvements to documentation and installation structure.
+
+
+## BrickPython v0.1.0
+
+- First release

@@ -1,14 +1,6 @@
-# Test for BrickPiWrapper
-
-# Run tests as
-#   python Test.py
-# or, if you've got it installed:
-#   nosetests
-
-# Install mock and nosetests on pi or mac using:
-#   sudo easy_install nose
-#   sudo easy_install mock
-
+# Tests for Motor
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 
 from BrickPython.BrickPiWrapper import BrickPiWrapper

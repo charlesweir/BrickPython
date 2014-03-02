@@ -1,5 +1,8 @@
+# Scheduler
+# Support for coroutines using Python generator functions.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-# Scheduler.  To be called repeatedly by the UI or other framework.
 import datetime
 
 class StopCoroutineException( Exception ):

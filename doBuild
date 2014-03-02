@@ -1,0 +1,17 @@
+#!/bin/ksh
+# Script to prepare for a release.  To execute, use
+#	. doBuild
+
+echo '>> See http://docs.python.org/3.1/distutils/packageindex.html#the-pypirc-file for how to configure pipy credentials'
+(
+	cd docs
+	make clean html
+	cd generated/html
+	zip -r ../Archive.zip *
+)
+python setup.py test
+
+echo '>> Upload docs to pypi from' `pwd`/docs/generated/Archive.zip
+echo '>> Form at the bottom of https://pypi.python.org/pypi?%3Aaction=pkg_edit&name=BrickPython'
+echo '>> To release module to pypi:  python setup.py sdist upload'
+echo '>> To install without releasing: sudo pip install -e .'

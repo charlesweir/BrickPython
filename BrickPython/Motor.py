@@ -1,5 +1,6 @@
-
 # Motor and associated classes, representing a motor attached to one of the BrickPi ports.
+#
+# Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 from Scheduler import Scheduler
 import logging
