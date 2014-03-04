@@ -1,4 +1,5 @@
 .. Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
+
 ===========================
 Introduction to BrickPython
 ===========================
@@ -51,7 +52,7 @@ But this makes programming rather hard.  One might want to have a nice simple fu
 	runMotorAtConstantSpeedForTime( aSpeed, aTime )
 
 But with normal Python programming model the program can only be executing one thing at a time.  So if it's executing
-that function, all the other input (other motor, sensors, user) are being ignored.
+that function, all the other input (other motor, sensors, user) is being ignored.
 
 **Ouch!**
 
@@ -73,8 +74,7 @@ This framework uses a third option: **Coroutines**.   With a coroutine, you can 
 nevertheless allow other things to go on before they return.  This relies on the Python 'yield' statement, which
 allows a function to go 'on hold' while other processing happens.
 
-Strictly speaking, what this package supports aren't true coroutines: a 'true' coroutine has its own stack, so
-that if a coroutine function calls another function that calls 'yield', that would still work.
+Strictly speaking, what this package supports aren't true coroutines: a 'true' coroutine has its own stack.
 Python doesn't support that, but we have ways around the problem.
 
 Python 3.4 will have better support for coroutines - see http://docs.python.org/3.4/library/asyncio.html .
@@ -84,7 +84,7 @@ I'm grateful for David Beazley his tutorial on Python coroutines: http://dabeaz.
 The Scheduler
 =============
 
-To make our coroutines work, we need something that coordinates them, and manages the interaction with the BrickPi.  These are the classes `Scheduler` and its derived class `BrickPiWrapper`.
+To make our coroutines work, we need something that coordinates them and manages the interaction with the BrickPi.  These are the classes `Scheduler` and its derived class `BrickPiWrapper`.
 
 :class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (50 times per second), and provides methods to manage them:
 starting and stopping them, combining them, and supporting features such as timeouts for a coroutine.
@@ -92,7 +92,7 @@ starting and stopping them, combining them, and supporting features such as time
 When the :class:`.Scheduler` stops a coroutine, the coroutine receives a :class:`.StopCoroutineException`; catching this allows the coroutine to tidy up properly.
 
 The class :class:`.BrickPiWrapper` extends the :class:`.Scheduler` to manage the BrickPi interaction, managing the :class:`.Motor` and :class:`.Sensor` objects, calling the BrickPi twice
-for every work call (once before, and once after all the coroutines have run), taking data from and subsequently updating all
+for every work call (once before, and once after all the coroutines have run), taking data from and subsequently updating
 each :class:`.Motor` and :class:`.Sensor`.
 
 So with the scheduler, here's all that's required to make a :class:`.Motor` move to a new position::
@@ -108,8 +108,8 @@ Integration with the Tk Graphical User Interface
 ================================================
 
 To make user input easy, this module provides and integration with the Tk graphical interface, using the Python Tkinter framework.
-The class that does this is :class:`.TkApplication`.   For convenience it derives from BrickPiWrapper.  The default
-shows a small grey window which accepts keystrokes, and exits when the 'q' key is pressed.
+The class that does this is :class:`.TkApplication`.   By default it
+shows a small grey window which accepts keystrokes, and exits when the 'q' key is pressed, but this can be overridden.
 
 Our example applications have a main class that derives from :class:`.TkApplication`, which itself derives from :class:`.BrickPiWrapper`.
 
@@ -117,7 +117,7 @@ Our example applications have a main class that derives from :class:`.TkApplicat
 Other Integrations
 ==================
 
-Integrations with other frameworks, or non at all, are equally straightforward.   The framework must call the
+Integrations with other frameworks, or none at all, are equally straightforward.   The framework must call the
 method :meth:`.Scheduler.doWork()` regularly, pausing for :meth:`.Scheduler.timeMillisToNextCall()` after each call.
 
 For example :class:`.CommandLineApplication` provides a scheduler for applications that don't require user input.
@@ -128,7 +128,7 @@ Motors and Sensors
 The :class:`.Motor` class implements methods to record and calculate the current speed.  It also implements the servo motor PID algorithm as the coroutine :meth:`.Motor.moveTo()`, allowing the motor
 to position itself accurately to a couple of degrees.  There's also a 'constant speed' coroutine :meth:`.Motor.setSpeed()`.
 
-The :class:`.Sensor` class simply keeps a record, :attr:`.Sensor.recentValues`, of the last few readings; its method :meth:`.Sensor.value()` answers the most recent one.  The type of each sensor
+The :class:`.Sensor` class keeps a record, :attr:`.Sensor.recentValues`, of the last few readings; its method :meth:`.Sensor.value()` answers the most recent one.  The type of each sensor
 is set up via initialization parameters to :class:`.BrickPiWrapper` (via :class:`.TkApplication` or :class:`.CommandLineApplication`).
 
 Example Applications
@@ -137,14 +137,14 @@ Example Applications
 * :class:`.MotorControllerApp` is for experimenting with a motor connected to port A.  It supports varying the PID settings, and moving different distances or at constant speed.
 
 * :class:`.DoorControlApp` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
-  on user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
+  On user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
 
 Other Environments
 ==================
 
 To help with development, this package also runs on other environments.  It's been tested on Mac OS X, but should run on
 any Python environment.  In non-RaspberryPi environments, it replaces the hardware connections with a 'mock'
-serial connection, with the result that it ignores motor settings and always returns default values (0)
+serial connection, which ignores motor settings and always returns default values (0)
 for sensors and motor positions.
 
 In particular, all the unit tests will run on any environment.
@@ -156,7 +156,7 @@ Finally, there are unit tests for all of the code here.  If you have ``nosetests
 
 	nosetests
 
-from the top level directory, or invoke them using::
+from the top level directory, or invoke them through the package manager using::
 
     python setup.py test
 

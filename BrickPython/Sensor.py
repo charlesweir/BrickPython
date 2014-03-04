@@ -6,11 +6,11 @@ import BrickPi
 
 class Sensor():
     '''Sensor, representing a sensor attached to one of the BrickPi ports.
-    *port* may be either a PORT_ value or an integer '1'-'5'
+    Parameter *port* may be either a value (BrickPi.PORT_1) or an integer '1'-'5'
 
-    There are class attributes with the types defined in the BrickPi module, e.g.
-        Sensor.ULTRASONIC_CONT
-    The sensor type for each port is configured in the initialization parameters to BrickPiWrapper (and derived classes)
+    There are class attributes with the types defined in the BrickPi module, e.g. Sensor.ULTRASONIC_CONT
+    You can configure the sensor type for each port in the initialization parameters to BrickPiWrapper (and derived classes)
+
     '''
     RAW               = BrickPi.TYPE_SENSOR_RAW
     LIGHT_OFF         = BrickPi.TYPE_SENSOR_LIGHT_OFF
