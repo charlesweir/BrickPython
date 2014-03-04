@@ -13,3 +13,5 @@ There are some obvious omissions in BrickPython.  Here are some next steps we've
 
 *   Better integration within BrickPi_Python?
 
+*   Support for Python 3.x?
+
