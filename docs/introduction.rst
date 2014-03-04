@@ -30,8 +30,15 @@ As a taster, here's a coroutine function to detect presence via a sensor, open a
 
 The actual implementation - which also supports user input to change the behavior at any time - is :class:`.DoorControlApp` in ``ExamplePrograms/DoorControl.py``
 
-Why Objects
-===========
+Where to Find Everything
+========================
+
+The Python module is at https://pypi.python.org/pypi/BrickPython
+
+The source code is at https://github.com/charlesweir/BrickPython
+
+Why Objects?
+============
 
 Objects make programming easier.  Objects can be intelligent (for example, the Motor object can know its speed); they
 can be easier to debug (Motor can print itself in a useful way); and they separate out concerns (you can deal with one
@@ -138,6 +145,8 @@ Example Applications
 
 * :class:`.DoorControlApp` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
   On user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
+
+* :class:`.SimpleApp` has no UI, and simply rotates the motor on port A back and forth.
 
 Other Environments
 ==================
