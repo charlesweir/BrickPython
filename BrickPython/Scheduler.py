@@ -26,7 +26,7 @@ class Scheduler():
         c = datetime.datetime.now() - ProgramStartTime
         return c.days * (3600.0 * 1000 * 24) + c.seconds * 1000.0 + c.microseconds / 1000.0
 
-    def __init__(self, timeMillisBetweenWorkCalls = 20):
+    def __init__(self, timeMillisBetweenWorkCalls = 50):
 
         self.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []

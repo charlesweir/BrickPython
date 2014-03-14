@@ -1,6 +1,10 @@
 # BrickPython Changelog
 
-## BrickPython v0.2.1 (not yet released)
+## BrickPython v0.3.1
+
+- Reduced sampling frequency so TkWindow shows correctly.
+
+## BrickPython v0.3
 
 - Added copyright and headers to all source files.
 - Sensor configuration no longer requires import * - old version still works.
