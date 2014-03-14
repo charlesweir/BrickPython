@@ -1,2 +1,2 @@
-# Change version numbers here and in docs/conf.py:
+# Change version numbers here and in docs/conf.py.  Also edit CHANGES.txt.
 __version__ = '0.3.1'
