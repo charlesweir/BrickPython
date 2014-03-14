@@ -143,7 +143,7 @@ class TestScheduler(unittest.TestCase):
         motorCo = TestScheduler.dummyCoroutine(2)
         motorCoReturned = self.scheduler.addActionCoroutine(motorCo)
         sensorCoReturned = self.scheduler.addSensorCoroutine(sensorCo)
-        # Then the 'latest coroutine' of each time will be returned correctly:
+        # Then the 'latest coroutine' will be returned correctly:
         self.assertEquals( motorCoReturned, motorCo )
         self.assertEquals( sensorCoReturned, sensorCo )
         # and the motor coroutine will update the status last:
