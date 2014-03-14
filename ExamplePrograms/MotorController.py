@@ -71,9 +71,9 @@ class MotorControllerApp(TkApplication):
             elif char == 'Y':
                 self.pidSetting.speedMultiplier /= 1.1
             elif char == 'z':
-                self.pidSetting.sumDistanceMultiplier *= 1.1
+                self.pidSetting.integratedDistanceMultiplier *= 1.1
             elif char == 'Z':
-                self.pidSetting.sumDistanceMultiplier /= 1.1
+                self.pidSetting.integratedDistanceMultiplier /= 1.1
             logging.info( "%r" % (self.pidSetting) )
             self.motor('A').setPIDSetting( self.pidSetting )
 

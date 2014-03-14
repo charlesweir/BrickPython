@@ -1,5 +1,10 @@
 # BrickPython Changelog
 
+## BrickPython v.4
+
+- Updated PID algorithm so it's independent of the work cycle time.  NOTE: One parameter to the constructor of
+  Motor.PIDSetting has changed.
+
 ## BrickPython v0.3.1
 
 - Reduced sampling frequency so TkWindow shows correctly.

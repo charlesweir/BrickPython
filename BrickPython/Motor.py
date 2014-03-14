@@ -11,14 +11,14 @@ class PIDSetting():
     Distances are in clicks, times in ms, motor power between -255 and +255, the sum of distance is added 20 times/sec.
     Speeds in clicks per second.
     '''
-    def __init__(self,distanceMultiplier=0.9,speedMultiplier=0.23,sumDistanceMultiplier=0.05,
+    def __init__(self,distanceMultiplier=0.9,speedMultiplier=0.23,integratedDistanceMultiplier=(0.05/20.0),
                  closeEnoughPosition=4, closeEnoughSpeed=10.0):
-        #: Factor for motor power as function of distance.
+        #: Factor for motor power as function of distance - in power units per click distance.
         self.distanceMultiplier = distanceMultiplier
-        #: Factor for motor power as function of speed.
+        #: Factor for motor power as function of speed - in power units per (click per millisecond)
         self.speedMultiplier = speedMultiplier
-        #: Factor for motor power as function of sum of distances.
-        self.sumDistanceMultiplier = sumDistanceMultiplier
+        #: Factor for motor power as a function of the integrated distance - in power units per (click-millisecond)
+        self.integratedDistanceMultiplier = integratedDistanceMultiplier
         #: Distance in clicks from the target that we'll accept as got there.
         self.closeEnoughPosition = closeEnoughPosition
         #: Speed that we'll consider as close enough to zero.
@@ -138,7 +138,7 @@ class Motor():
 
                 power = (self.pidSetting.distanceMultiplier * delta
                          - self.pidSetting.speedMultiplier * speed
-                         + self.pidSetting.sumDistanceMultiplier * distanceIntegratedOverTime )
+                         + self.pidSetting.integratedDistanceMultiplier * distanceIntegratedOverTime )
                 self.setPower( power )
 
                 yield

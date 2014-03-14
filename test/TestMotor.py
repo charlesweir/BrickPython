@@ -106,6 +106,8 @@ class TestMotor(unittest.TestCase):
         motor = self.motor
         # When the motor isn't moving and is some distance from the target
         co = motor.positionUsingPIDAlgorithmWithoutTimeout( 100 )
+        # And we have quite long work cycles:
+        motor.timeMillis.side_effect = range(0,990,20)
         # The motor power increases with time
         motor.updatePosition( 0 )
         co.next()
@@ -116,10 +118,10 @@ class TestMotor(unittest.TestCase):
         self.assertGreater( p2, p1 )
 
         # And the motor power depends on time between readings, so if we do it all again
-        # with with longer between readings and a different motor
+        # with with longer work cycles and a different motor
         motorB = self.bp.motor( 'B' )
         motorB.timeMillis = Mock()
-        motorB.timeMillis.side_effect = range(0,99,2)
+        motorB.timeMillis.side_effect = range(0,990,40)
         co = motorB.positionUsingPIDAlgorithmWithoutTimeout( 100 )
         motorB.updatePosition( 0 )
         co.next()
