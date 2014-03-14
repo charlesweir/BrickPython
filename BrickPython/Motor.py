@@ -26,8 +26,8 @@ class PIDSetting():
 
 
     def __repr__(self):
-        return "PID Setting (distanceMultiplier=%3.4f, speedMultiplier=%3.4f, sumDistanceMultiplier=%3.4f)" % (self.distanceMultiplier,
-                                                                        self.speedMultiplier, self.sumDistanceMultiplier)
+        return "PID Setting (distanceMultiplier=%3.4f, speedMultiplier=%3.4f, integratedDistanceMultiplier=%3.4f)" % (self.distanceMultiplier,
+                                                                        self.speedMultiplier, self.integratedDistanceMultiplier)
 
 
 class TimePosition():
