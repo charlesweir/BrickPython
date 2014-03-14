@@ -112,7 +112,22 @@ class TestMotor(unittest.TestCase):
         p1 = motor.power()
         motor.updatePosition( 0 )
         co.next()
-        assert( motor.power() > p1 )
+        p2 = motor.power()
+        self.assertGreater( p2, p1 )
+
+        # And the motor power depends on time between readings, so if we do it all again
+        # with with longer between readings and a different motor
+        motorB = self.bp.motor( 'B' )
+        motorB.timeMillis = Mock()
+        motorB.timeMillis.side_effect = range(0,99,2)
+        co = motorB.positionUsingPIDAlgorithmWithoutTimeout( 100 )
+        motorB.updatePosition( 0 )
+        co.next()
+        motorB.updatePosition( 0 )
+        co.next()
+        # then we get a larger power reading than before
+        self.assertGreater( motorB.power(), p2 )
+
 
     def testTimesOutIfNeverReachesTarget(self):
         motor = self.motor
@@ -156,6 +171,9 @@ class TestMotor(unittest.TestCase):
 
     def testMotorTextRepresentation(self):
         self.assertRegexpMatches( repr(self.motor), 'Motor.*location=.*speed=.*')
+
+    def testPIDIntegratedDistanceMultiplierBackwardCompatibility(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

@@ -124,13 +124,13 @@ class Motor():
 
     def positionUsingPIDAlgorithmWithoutTimeout( self, target ):
         'Coroutine to move the motor to position *target*, using the PID algorithm with the current PIDSettings'
-        sumDistance = 0 # Sum of all the distances (=I bit of PID ).
+        distanceIntegratedOverTime = 0 # I bit of PID.
         self.enable(True)
         logging.info( "Motor %s moving to %d" % (self.idChar, target) )
         try:
             while True:
                 delta = (target - self.currentTP.position)
-                sumDistance += delta
+                distanceIntegratedOverTime += delta * (self.currentTP.time - self.previousTP.time)
                 speed = self.speed()
 
                 if abs(delta) <= self.pidSetting.closeEnoughPosition and abs(speed) < self.pidSetting.closeEnoughSpeed:
@@ -138,7 +138,7 @@ class Motor():
 
                 power = (self.pidSetting.distanceMultiplier * delta
                          - self.pidSetting.speedMultiplier * speed
-                         + self.pidSetting.sumDistanceMultiplier * sumDistance )
+                         + self.pidSetting.sumDistanceMultiplier * distanceIntegratedOverTime )
                 self.setPower( power )
 
                 yield
