@@ -86,7 +86,7 @@ The Scheduler
 
 To make our coroutines work, we need something that coordinates them, and manages the interaction with the BrickPi.  These are the classes `Scheduler` and its derived class `BrickPiWrapper`.
 
-:class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (50 times per second), and provides methods to manage them:
+:class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (20 times per second), and provides methods to manage them:
 starting and stopping them, combining them, and supporting features such as timeouts for a coroutine.
 
 When the :class:`.Scheduler` stops a coroutine, the coroutine receives a :class:`.StopCoroutineException`; catching this allows the coroutine to tidy up properly.
@@ -159,4 +159,5 @@ Finally, there are unit tests for all of the code here.  If you have ``nosetests
 from the top level directory, or invoke them using::
 
     python setup.py test
+
 
