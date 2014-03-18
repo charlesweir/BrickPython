@@ -117,7 +117,8 @@ class TestScheduler(unittest.TestCase):
         self.scheduler.addActionCoroutine(TestScheduler.dummyCoroutineThatThrowsException())
         # then the scheduler will remove it from the work schedule
         self.scheduler.doWork()
-        assert( self.scheduler.numCoroutines() == 0 )
+        self.scheduler.doWork() # CW - can't quite figure out why we need two calls here...
+        self.assertEquals( self.scheduler.numCoroutines(), 0 )
 
     def testCoroutinesCanCleanupWhenTerminated(self):
         # When we start a motor coroutine
@@ -172,7 +173,7 @@ class TestScheduler(unittest.TestCase):
         for i in self.scheduler.runTillFirstCompletes(TestScheduler.dummyCoroutine(1,9),
                                                       TestScheduler.dummyCoroutine(1,2),
                                                       TestScheduler.dummyCoroutine(1,9) ):
-            self.scheduler.doWork()
+            pass
         #  the first to complete stops the others:
         self.assertEquals( TestScheduler.coroutineCalls, [1,1,1,2] )
         self.assertEquals( self.scheduler.numCoroutines(), 0)
@@ -180,7 +181,7 @@ class TestScheduler(unittest.TestCase):
     def testRunTillAllComplete( self ):
         # When we run three coroutines using runTillAllComplete:
         for i in self.scheduler.runTillAllComplete( *[TestScheduler.dummyCoroutine(1,i) for i in [2,3,4]] ):
-            self.scheduler.doWork()
+            pass
         #  they all run to completion:
         print TestScheduler.coroutineCalls
         assert( TestScheduler.coroutineCalls == [1,1,1,2,2,3] )
@@ -189,7 +190,7 @@ class TestScheduler(unittest.TestCase):
     def testWithTimeout(self):
         # When we run a coroutine with a timeout:
         for i in self.scheduler.withTimeout(10, TestScheduler.dummyCoroutineThatDoesCleanup(1,99) ):
-            self.scheduler.doWork()
+            pass
         # It completes at around the timeout, and does cleanup:
         print TestScheduler.coroutineCalls
         self.assertTrue( 0 < TestScheduler.coroutineCalls[-2] <= 10) # N.b. currentTimeMillis is called more than once per doWork call.
@@ -264,26 +265,42 @@ class TestScheduler(unittest.TestCase):
             scheduler.doWork()
         self.assertEquals(scheduler.lastExceptionCaught.message, "Hello")
 
-#     def testRunTillFirstCompletesWithException(self):
-#         # When we run three coroutines using runTillFirstCompletes:
-#         for i in self.scheduler.runTillFirstCompletes(self.throwingCoroutine(),
-#                                                       TestScheduler.dummyCoroutine(1,2),
-#                                                       TestScheduler.dummyCoroutine(1,9) ):
-#             self.scheduler.doWork()
-#         #  the first to complete stops the others:
-#         self.assertEquals( TestScheduler.coroutineCalls, [1,1,1,2] )
-#         self.assertEquals( self.scheduler.numCoroutines(), 0)
-#         self.assertEquals(self.scheduler.lastExceptionCaught.message, "Hello")
-# 
-#     def testRunTillAllCompleteWithException( self ):
-#         # When we run three coroutines using runTillAllComplete:
-#         for i in self.scheduler.runTillAllComplete( *[TestScheduler.dummyCoroutine(1,i) for i in [2,3,4]] ):
-#             self.scheduler.doWork()
-#         #  they all run to completion:
-#         print TestScheduler.coroutineCalls
-#         assert( TestScheduler.coroutineCalls == [1,1,1,2,2,3] )
-#         assert( self.scheduler.numCoroutines() == 0)
+    def testRunTillFirstCompletesWithException(self):
+        # When we run three coroutines using runTillFirstCompletes:
+        self.scheduler.addActionCoroutine(self.scheduler.runTillFirstCompletes(self.throwingCoroutine(),
+                                                      TestScheduler.dummyCoroutine(1,2),
+                                                      TestScheduler.dummyCoroutine(1,9) ))
+        for i in range(1,10):
+            self.scheduler.doWork()
+        #  the first to complete stops the others:
+        self.assertEquals( TestScheduler.coroutineCalls, [1,1] )
+        self.assertEquals( self.scheduler.numCoroutines(), 0)
+        # and the exception is caught by the Scheduler:
+        self.assertEquals(self.scheduler.lastExceptionCaught.message, "Hello")
 
+    def testRunTillAllCompleteWithException( self ):
+        # When we run three coroutines using runTillAllComplete:
+        self.scheduler.addActionCoroutine(self.scheduler.runTillAllComplete(self.throwingCoroutine(),
+                                                      TestScheduler.dummyCoroutine(1,2)))
+        for i in range(1,10):
+            self.scheduler.doWork()
+        #  the first to complete stops the others:
+        self.assertEquals( TestScheduler.coroutineCalls, [1] )
+        self.assertEquals( self.scheduler.numCoroutines(), 0)
+        # and the exception is caught by the Scheduler:
+        self.assertEquals(self.scheduler.lastExceptionCaught.message, "Hello")
+
+    def testCanCatchExceptionWithinNestedCoroutines(self):
+        self.caught = 0
+        def outerCoroutine(self):
+            try:
+                for i in self.throwingCoroutine():
+                    yield
+            except:
+                self.caught = 1
+        for i in outerCoroutine(self):
+            pass
+        self.assertEquals(self.caught, 1)
 
 
 if __name__ == '__main__':

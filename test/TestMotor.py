@@ -135,7 +135,7 @@ class TestMotor(unittest.TestCase):
         motor = self.motor
         co = motor.positionUsingPIDAlgorithm( 100 )
         # If the motor never reaches the target in 6 seconds:
-        for i in range(0,6000/20):
+        for i in xrange(0,6000/50):
             self.bp.doWork()
         # It terminates
         self.assertFalse( self.bp.stillRunning( co ) )
