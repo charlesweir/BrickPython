@@ -1,0 +1,25 @@
+#!/bin/ksh
+# Runs a command remotely on the BrickPi, assuming default credentials and device name.
+# Copies whole BrickPython directory structure to the same location on the raspberrypi
+# E.g.
+#    cd ExamplePrograms; ../runbp python SimpleApp.py
+
+# This script lives in the BrickPython project directory
+# To make it executable:
+#      chmod a+x runpb
+# To make ssh work without entering passwords, see
+#      https://www.debian.org/devel/passwordlessssh
+# Note - The windows will appear on the BrickPi's screen, not locally to this machine.
+
+# Current working directory relative to home:
+WorkingRelDir=${PWD#$HOME/}
+
+# BrickPython project directory relative to home:
+BrickPythonDir=$(cd $(dirname $0);echo $PWD)
+BrickPythonRelativeDir=${BrickPythonDir#$HOME/}
+
+(
+    cd ~
+    tar cf - $BrickPythonRelativeDir | ssh pi@raspberrypi "(rm -rf $BrickPythonRelativeDir; tar xf -)"
+)
+ssh -t pi@raspberrypi "(export DISPLAY=:1.0; cd $WorkingRelDir; $*)"
