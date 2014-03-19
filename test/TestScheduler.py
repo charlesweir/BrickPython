@@ -11,6 +11,7 @@
 
 from BrickPython.BrickPiWrapper import *
 import unittest
+import logging
 from mock import *
 
 class TestScheduler(unittest.TestCase):
@@ -304,5 +305,6 @@ class TestScheduler(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(message)s', level=logging.DEBUG) # Logging is a simple print
     unittest.main()
 

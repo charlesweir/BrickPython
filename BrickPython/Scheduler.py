@@ -5,6 +5,7 @@
 
 import datetime
 import logging
+import sys, traceback
 
 class StopCoroutineException( Exception ):
     '''Exception used to stop a coroutine'''
@@ -51,7 +52,10 @@ class Scheduler():
                 self.coroutines.remove( coroutine )
             except Exception as e:
                 self.lastExceptionCaught = e
-                logging.info( "Scheduler - caught: %r, continuing." % (e) )
+                logging.info( "Scheduler - caught: %r" % (e) )
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                trace = "".join(traceback.format_tb(exc_traceback))
+                logging.debug( "Traceback (latest call first):\n %s" % trace )
                 self.coroutines.remove( coroutine )
 
         self.updateCoroutine.next()
