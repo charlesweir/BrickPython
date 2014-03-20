@@ -20,6 +20,10 @@ class TestSensor(unittest.TestCase):
     def testSensorTextRepresentation(self):
         self.assertEquals( repr(Sensor( PORT_1 ) ), 'Sensor 1: 0')
 
+    def testDifferentWaysToInitialize(self):
+        self.assertEquals( repr(Sensor( '1' ) ), 'Sensor 1: 0')
+        self.assertEquals( repr(Sensor( '1', Sensor.COLOR_NONE ) ), 'Sensor 1: 0')
+
 
 if __name__ == '__main__':
     unittest.main()
