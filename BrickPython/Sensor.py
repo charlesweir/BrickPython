@@ -43,24 +43,20 @@ class Sensor():
         self.type = type
         #: Character identifying the sensor: 1 through 5.
         self.idChar = chr(self.port + ord('1'))
-        #: Array of the *maxRecentValues* most recent sensor readings
-        self.recentValues = [0]
-        #: How many sensor readings to store
-        self.maxRecentValues = 5
+        #: The most recent sensor reading
+        self.recentValue = 0
 
     def updateValue(self, newValue):
         # Called by the framework to set the new value for the sensor.
         # We ignore zero values - probably means a comms failure.
         if newValue == 0:
             return
-        self.recentValues.append( newValue )
-        if len(self.recentValues) > self.maxRecentValues:
-            del self.recentValues[0]
+        self.recentValue = newValue
 
     def value(self):
         'Answers the latest sensor value received'
-        return self.recentValues[-1]
+        return self.recentValue
 
     def __repr__(self):
-        return "%s %s: %r" % (self.__class__.__name__, self.idChar, self.recentValues)
+        return "%s %s: %r" % (self.__class__.__name__, self.idChar, self.recentValue)
 

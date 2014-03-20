@@ -16,13 +16,9 @@ class TestSensor(unittest.TestCase):
         assert( sensor.value() == 0 )
         sensor.updateValue( 3 )
         assert( sensor.value() == 3 )
-        assert( sensor.recentValues == [0,3] )
-        for i in range(1,6):
-            sensor.updateValue( i )
-        assert( sensor.recentValues == range(1,6) )
 
     def testSensorTextRepresentation(self):
-        self.assertEquals( repr(Sensor( PORT_1 ) ), 'Sensor 1: [0]')
+        self.assertEquals( repr(Sensor( PORT_1 ) ), 'Sensor 1: 0')
 
 
 if __name__ == '__main__':
