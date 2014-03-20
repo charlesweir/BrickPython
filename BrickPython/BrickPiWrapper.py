@@ -19,17 +19,16 @@ class BrickPiWrapper(Scheduler):
     def __init__(self, portTypes = {} ):
         Scheduler.__init__(self)
         self.motors = { 'A': Motor(BP.PORT_A, self), 'B': Motor(BP.PORT_B, self), 'C': Motor(BP.PORT_C, self), 'D': Motor(BP.PORT_D, self) }
-        self.sensors = { '1': Sensor( BP.PORT_1 ), '2': Sensor( BP.PORT_2 ), '3': Sensor( BP.PORT_3 ), '4': Sensor( BP.PORT_4 ) }
+        self.sensors = {  }
         BP.BrickPiSetup()  # setup the serial port for communication
 
         for port, sensorType in portTypes.items():
-            portNum = Sensor.portNumFromId(port)
             if isinstance(sensorType, int):
-                sensor = Sensor(portNum, sensorType)
+                sensor = Sensor(port, sensorType)
             else:
-                sensor = sensorType(portNum)
+                sensor = sensorType(port)
             self.sensors[sensor.idChar] = sensor
-            BP.BrickPi.SensorType[portNum] = sensor.type
+            BP.BrickPi.SensorType[sensor.port] = sensor.type
         BP.BrickPiSetupSensors()       #Send the properties of sensors to BrickPi
 
         self.setUpdateCoroutine( self.updaterCoroutine() )

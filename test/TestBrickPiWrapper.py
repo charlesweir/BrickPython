@@ -26,7 +26,7 @@ class TestBrickPiWrapper(unittest.TestCase):
         assert(BrickPiWrapper() != None)
 
     def testAllMethodsOK(self):
-        bp = BrickPiWrapper()
+        bp = BrickPiWrapper({'1': Sensor})
         for c in range(ord('A'),ord('D')):
             assert( bp.motor(chr(c)) != None)
         m = bp.motor('A')

@@ -11,6 +11,7 @@ class Sensor():
     There are class attributes with the types defined in the BrickPi module, e.g. Sensor.ULTRASONIC_CONT
     You can configure the sensor type for each port in the initialization parameters to BrickPiWrapper (and derived classes)
 
+    Used both as class in its own right, and as superclass for other sensor types.
     '''
     RAW               = BrickPi.TYPE_SENSOR_RAW
     LIGHT_OFF         = BrickPi.TYPE_SENSOR_LIGHT_OFF
@@ -38,7 +39,7 @@ class Sensor():
         return result
 
     def __init__(self, port, type=RAW):
-        self.port = port
+        self.port = Sensor.portNumFromId(port)
         self.type = type
         #: Character identifying the sensor: 1 through 5.
         self.idChar = chr(self.port + ord('1'))
@@ -61,5 +62,5 @@ class Sensor():
         return self.recentValues[-1]
 
     def __repr__(self):
-        return "Sensor %s: %r" % (self.idChar, self.recentValues)
+        return "%s %s: %r" % (self.__class__.__name__, self.idChar, self.recentValues)
 
