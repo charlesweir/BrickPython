@@ -9,16 +9,19 @@ class TouchSensor(Sensor):
     Parameter *port* may be either a value (BrickPi.PORT_1) or an integer '1'-'5'
 
     Just using the BrickPi TYPE_SENSOR_TOUCH didn't work for me; hence this.
+
+    value() is True if the button is pressed; False otherwise.
     '''
     def __init__(self, port):
         Sensor.__init__(self, port, Sensor.RAW)
         #: Function that gets called with new value as parameter when the value changes - default, none.
         self.callbackFunction = lambda x: 0
+        self.recentValue = True # default, 0, is pressed.
 
     def updateValue(self, newValue):
         previousValue = self.recentValue
         Sensor.updateValue(self, newValue)
-        self.recentValue = True if self.recentValue > 500 else False
+        self.recentValue = False if self.recentValue > 500 else True
         if self.recentValue != previousValue:
             self.callbackFunction(self.recentValue)
 

@@ -35,7 +35,7 @@ class Sensor():
             result = portNumOrIdChar
         else:
             result = int(portNumOrIdChar) - 1
-        assert( result in range(0,3))
+        assert( result in range(0,4))
         return result
 
     def __init__(self, port, type=RAW):

@@ -6,7 +6,7 @@ import sys, os # Python path kludge - omit these 2 lines if BrickPython is insta
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))))
 
 from BrickPython.TkApplication import TkApplication
-from BrickPython.Sensor import Sensor
+from BrickPython.TouchSensor import TouchSensor
 import logging
 
 class App(TkApplication):
@@ -14,7 +14,7 @@ class App(TkApplication):
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT })
+        TkApplication.__init__(self, {'4': TouchSensor })
         self.doorLocked = False
         self.addSensorCoroutine( self.turnWhenDetected() )
         self.root.wm_title("Trial running")
@@ -22,9 +22,10 @@ class App(TkApplication):
             self.motor(c).zeroPosition()
 
     def turnWhenDetected(self):
+        sensor = self.sensor('4')
         while True:
-            for i in self.waitMilliseconds(500): yield
-            print self.sensor('4').value()
+            for i in sensor.waitForChange(): yield
+            print sensor.value()
 
 
 ##        for c in "ABCD":

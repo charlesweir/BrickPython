@@ -13,29 +13,29 @@ class TestTouchSensor(unittest.TestCase):
         sensor = TouchSensor( '1' )
         self.assertEquals(sensor.port, 0)
         self.assertEquals( sensor.idChar, '1' )
-        self.assertEquals( sensor.value(), False )
+        self.assertEquals( sensor.value(), True ) # Pressed in
         sensor.updateValue( 1000 )
-        self.assertEquals( sensor.value(), True )
+        self.assertEquals( sensor.value(), False )
 
     def testTextRepresentation(self):
-        self.assertEquals( repr(TouchSensor( '1' ) ), 'TouchSensor 1: 0')
+        self.assertEquals( repr(TouchSensor( '1' ) ), 'TouchSensor 1: True')
 
     def testCallbackWhenChanged(self):
-        result = [False]
+        result = [True]
         def callbackFunc(x):
             result[0] = x
         sensor = TouchSensor( '1' )
         sensor.callbackFunction = callbackFunc
         sensor.updateValue( 1000 )
-        self.assertEquals( result[0], True )
+        self.assertEquals( result[0], False )
         # And no call when it doesn't change
-        result[0] = False
-        sensor.updateValue( 1000 )
-        self.assertEquals( result[0], False )
-        # But does get a call when it changes back
         result[0] = True
+        sensor.updateValue( 1000 )
+        self.assertEquals( result[0], True )
+        # But does get a call when it changes back
+        result[0] = False
         sensor.updateValue( 20 )
-        self.assertEquals( result[0], False )
+        self.assertEquals( result[0], True )
 
     def testCoroutineWaitingForChange(self):
         sensor = TouchSensor( '1' )
