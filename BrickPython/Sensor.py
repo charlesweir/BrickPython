@@ -30,12 +30,16 @@ class Sensor():
     @staticmethod
     def portNumFromId(portNumOrIdChar):
         # Answers the port number given either port number or the ID Char.
-        if (not isinstance(portNumOrIdChar, int)):
-            return int(portNumOrIdChar) - 1
-        return portNumOrIdChar
+        if isinstance(portNumOrIdChar, int):
+            result = portNumOrIdChar
+        else:
+            result = int(portNumOrIdChar) - 1
+        assert( result in range(0,3))
+        return result
 
-    def __init__(self, port):
+    def __init__(self, port, type=RAW):
         self.port = port
+        self.type = type
         #: Character identifying the sensor: 1 through 5.
         self.idChar = chr(self.port + ord('1'))
         #: Array of the *maxRecentValues* most recent sensor readings

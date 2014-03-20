@@ -22,9 +22,14 @@ class BrickPiWrapper(Scheduler):
         self.sensors = { '1': Sensor( BP.PORT_1 ), '2': Sensor( BP.PORT_2 ), '3': Sensor( BP.PORT_3 ), '4': Sensor( BP.PORT_4 ) }
         BP.BrickPiSetup()  # setup the serial port for communication
 
-        for port in portTypes:
+        for port, sensorType in portTypes.items():
             portNum = Sensor.portNumFromId(port)
-            BP.BrickPi.SensorType[portNum] = portTypes[port]
+            if isinstance(sensorType, int):
+                sensor = Sensor(portNum, sensorType)
+            else:
+                sensor = sensorType(portNum)
+            self.sensors[sensor.idChar] = sensor
+            BP.BrickPi.SensorType[portNum] = sensor.type
         BP.BrickPiSetupSensors()       #Send the properties of sensors to BrickPi
 
         self.setUpdateCoroutine( self.updaterCoroutine() )

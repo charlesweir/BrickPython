@@ -14,7 +14,7 @@ class App(TkApplication):
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT , '4': Sensor.TOUCH})
+        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT })
         self.doorLocked = False
         self.addSensorCoroutine( self.turnWhenDetected() )
         self.root.wm_title("Trial running")
