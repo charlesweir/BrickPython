@@ -3,7 +3,6 @@
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import BrickPi
-import bisect
 
 class Sensor():
     '''Sensor, representing a sensor attached to one of the BrickPi ports.
@@ -97,16 +96,16 @@ class UltrasonicSensor(Sensor):
     '''Represents an NXT ultrasonic sensor attached to one of the BrickPi ports.
     Parameter *port* may be either a value (BrickPi.PORT_1) or an integer '1'-'5'
 
-    value() is distance to the nearest 5 cm
+    value() is distance to the nearest 5 cm, with a maximum of MAX_VALUE
     '''
-    MAX_VALUE = 100
+    #: The reading when no object is in sight:
+    MAX_VALUE = 30
 
     def __init__(self, port):
-        # Just using the BrickPi TYPE_SENSOR_TOUCH didn't work for me; hence raw.
         Sensor.__init__(self, port, Sensor.ULTRASONIC_CONT)
 
     def cookValue(self, rawValue):
-        thresholds = [3,8,13,18,23,28]
-        values = [0,5,10,15,20,25,UltrasonicSensor.MAX_VALUE]
-        return values[bisect.bisect(thresholds, rawValue)]
+        result = int(5 * round(float(rawValue)/5))  # Round to nearest 5
+        return min(result, UltrasonicSensor.MAX_VALUE)
+
 
