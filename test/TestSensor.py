@@ -68,8 +68,16 @@ class TestSensor(unittest.TestCase):
         for input, output in {0:0, 2:0, 3:5, 4:5, 9:10, 11:10, 14:15, 16:15, 22:20, 23:25, 26:25,
                               255: UltrasonicSensor.MAX_VALUE
                               }.items():
-            sensor.updateValue( input )
+            for i in xrange(0,100):
+                sensor.updateValue( input )  # Remove effects of smoothing.
             self.assertEquals( sensor.value(), output )
+
+    def testUltrasonicSensorSmoothing(self):
+        sensor = UltrasonicSensor( '1' )
+        for input in [ 24,14,10,8,10,10,50,10,50,18,50]:
+            sensor.updateValue( input )
+        print sensor
+        self.assertEquals( sensor.value(), 10 )
 
     def testLightSensor(self):
         #Light is 680, dark about 800

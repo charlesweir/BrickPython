@@ -20,6 +20,7 @@ class App(TkApplication):
         self.root.wm_title("Trial running")
         for c in "ABCD":
             self.motor(c).zeroPosition()
+            self.addActionCoroutine(self.motor(c).runAtConstantSpeed(180))
         for c in settings:
             self.addSensorCoroutine(self.showChanges(c))
 
@@ -34,12 +35,6 @@ class App(TkApplication):
         while True:
             for i in self.waitMilliseconds(1000): yield
             print sensor
-
-##        for c in "ABCD":
-##            motor= self.motor(c)
-##            for i in motor.moveTo(90*2): yield
-##            for i in motor.moveTo(0): yield
-##
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(message)s', level=logging.DEBUG) # All log messages printed to console.

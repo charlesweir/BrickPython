@@ -103,13 +103,25 @@ class UltrasonicSensor(Sensor):
     '''
     #: The reading when no object is in sight:
     MAX_VALUE = 30
+    #: Round readings to nearest centimeters.
+    ROUND_TO = 5
+    #: How many readings to smooth over.
+    SMOOTHING_RANGE=10
 
     def __init__(self, port):
+        self.recentRawValues = [0]
         Sensor.__init__(self, port, Sensor.ULTRASONIC_CONT)
 
     def cookValue(self, rawValue):
-        result = int(5 * round(float(rawValue)/5))  # Round to nearest 5
+        self.recentRawValues.append( rawValue )
+        if len(self.recentRawValues) > UltrasonicSensor.SMOOTHING_RANGE:
+            del self.recentRawValues[0]
+        smoothedValue = min(self.recentRawValues)
+        result = int(self.ROUND_TO * round(float(smoothedValue)/self.ROUND_TO))  # Round to nearest 5
         return min(result, UltrasonicSensor.MAX_VALUE)
+
+#     def displayValue(self):
+#         return self.recentRawValues
 
 class LightSensor(Sensor):
     '''Represents my NXT color sensor.
