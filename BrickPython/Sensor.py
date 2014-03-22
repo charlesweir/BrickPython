@@ -76,8 +76,11 @@ class Sensor():
         return rawValue
 
     def __repr__(self):
-        return "%s %s: %r (%d)" % (self.__class__.__name__, self.idChar, self.recentValue, self.rawValue)
+        return "%s %s: %r (%d)" % (self.__class__.__name__, self.idChar, self.displayValue(), self.rawValue)
 
+    def displayValue(self):
+        'Answers a good representation of the current value for display'
+        return self.value()
 
 class TouchSensor(Sensor):
     '''TouchSensor, representing an NXT touch sensor attached to one of the BrickPi ports.
@@ -108,4 +111,26 @@ class UltrasonicSensor(Sensor):
         result = int(5 * round(float(rawValue)/5))  # Round to nearest 5
         return min(result, UltrasonicSensor.MAX_VALUE)
 
+class LightSensor(Sensor):
+    '''Represents my NXT color sensor.
+    The BrickPi_Python COLOR_FULL setting didn't work for me at all - always has value 1.
+    (though it did light up a red LED on the device).
+
+    But in RAW mode the sensor does seem to detect the difference between light and dark backgrounds.
+
+    value() is either LIGHT or DARK
+    '''
+    #: Detected a light background:
+    LIGHT = 1
+    #: Detected a dark background:
+    DARK = 0
+
+    def __init__(self, port):
+        Sensor.__init__(self, port, Sensor.RAW)
+
+    def cookValue(self, rawValue):
+        return LightSensor.LIGHT if rawValue < 740 else LightSensor.DARK
+
+    def displayValue(self):
+        return "Light" if self.value() == LightSensor.LIGHT else "Dark"
 

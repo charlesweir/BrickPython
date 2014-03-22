@@ -4,7 +4,7 @@
 
 import unittest
 from BrickPython.BrickPi import PORT_1
-from BrickPython.Sensor import Sensor, TouchSensor, UltrasonicSensor
+from BrickPython.Sensor import Sensor, TouchSensor, UltrasonicSensor, LightSensor
 import TestScheduler
 
 class TestSensor(unittest.TestCase):
@@ -65,12 +65,22 @@ class TestSensor(unittest.TestCase):
         sensor = UltrasonicSensor( '1' )
         self.assertEquals(sensor.port, 0)
         self.assertEquals( sensor.idChar, '1' )
-        self.assertEquals( sensor.value(), 0 )
         for input, output in {0:0, 2:0, 3:5, 4:5, 9:10, 11:10, 14:15, 16:15, 22:20, 23:25, 26:25,
                               255: UltrasonicSensor.MAX_VALUE
                               }.items():
             sensor.updateValue( input )
             self.assertEquals( sensor.value(), output )
+
+    def testLightSensor(self):
+        #Light is 680, dark about 800
+        sensor = LightSensor('4')
+        self.assertEquals(sensor.port, 3)
+        self.assertEquals( sensor.idChar, '4' )
+        for input, output in { 680: LightSensor.LIGHT, 800: LightSensor.DARK
+                              }.items():
+            sensor.updateValue( input )
+            self.assertEquals( sensor.value(), output )
+        self.assertEquals( repr(sensor), "LightSensor 4: 'Dark' (800)")
 
 if __name__ == '__main__':
     unittest.main()
