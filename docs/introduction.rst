@@ -135,8 +135,18 @@ Motors and Sensors
 The :class:`.Motor` class implements methods to record and calculate the current speed.  It also implements the servo motor PID algorithm as the coroutine :meth:`.Motor.moveTo()`, allowing the motor
 to position itself accurately to a couple of degrees.  There's also a 'constant speed' coroutine :meth:`.Motor.setSpeed()`.
 
-The :class:`.Sensor` class keeps a record, :attr:`.Sensor.recentValues`, of the last few readings; its method :meth:`.Sensor.value()` answers the most recent one.  The type of each sensor
-is set up via initialization parameters to :class:`.BrickPiWrapper` (via :class:`.TkApplication` or :class:`.CommandLineApplication`).
+The :class:`.Sensor` class provides a superclass and default implementation for all sensors.  Its method :meth:`.Sensor.value()` answers the current value (possible values depend on the sensor type).
+It provides two approaches to check for changes:
+
+* :meth:`.Sensor.waitForChange()` is a coroutine that returns only when the sensor value changes.
+
+* :attr:`.Sensor.callbackFunction` is a function that will be called with the new value as a parameter when the value changed.
+
+Current supported implementation are :class:`.TouchSensor`, :class:`.UltrasonicSensor` and :class:`.LightSensor`
+The physical configuration of sensors is set up as an initialization parameter to the Application class (:class:`.TkApplication` or :class:`.CommandLineApplication`)::
+
+        TkApplication.__init__(self, {'1': LightSensor, '2': TouchSensor, '3': UltrasonicSensor })
+
 
 Example Applications
 ====================
