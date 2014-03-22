@@ -132,5 +132,5 @@ class LightSensor(Sensor):
         return LightSensor.LIGHT if rawValue < 740 else LightSensor.DARK
 
     def displayValue(self):
-        return "Light" if self.value() == LightSensor.LIGHT else "Dark"
+        return ("Dark","Light")[self.value()]
 
