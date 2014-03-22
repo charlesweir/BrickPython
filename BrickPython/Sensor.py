@@ -35,27 +35,43 @@ class Sensor():
             result = portNumOrIdChar
         else:
             result = int(portNumOrIdChar) - 1
-        assert( result in range(0,4))
+        assert( result in range(0,4)) # Yes, there are 5 sensor ports, but brickpi_python doesn't support #5
         return result
 
-    def __init__(self, port, type=RAW):
+    def __init__(self, port, sensorType=RAW):
         self.port = Sensor.portNumFromId(port)
-        self.type = type
+        self.type = sensorType
         #: Character identifying the sensor: 1 through 5.
         self.idChar = chr(self.port + ord('1'))
         #: The most recent sensor reading
-        self.recentValue = 0
+        self.recentValue = self.cookValue(0)
+        #: Function that gets called with new value as parameter when the value changes - default, none.
+        self.callbackFunction = lambda x: 0
 
     def updateValue(self, newValue):
         # Called by the framework to set the new value for the sensor.
         # We ignore zero values - probably means a comms failure.
         if newValue == 0:
             return
-        self.recentValue = newValue
+        previousValue = self.recentValue
+        self.recentValue = self.cookValue(newValue)
+        if self.recentValue != previousValue:
+            self.callbackFunction(self.recentValue)
+
+    def waitForChange(self):
+        'Coroutine that completes when the sensor value changes'
+        previousValue = self.recentValue
+        while self.recentValue == previousValue:
+            yield
+
 
     def value(self):
         'Answers the latest sensor value received'
         return self.recentValue
+
+    def cookValue(self, rawValue):
+        'Answers the value to return for a given input sensor reading'
+        return rawValue
 
     def __repr__(self):
         return "%s %s: %r" % (self.__class__.__name__, self.idChar, self.recentValue)

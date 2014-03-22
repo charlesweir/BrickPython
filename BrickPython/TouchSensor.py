@@ -5,7 +5,7 @@
 from Sensor import Sensor
 
 class TouchSensor(Sensor):
-    '''TouchSensor, representing a sensor attached to one of the BrickPi ports.
+    '''TouchSensor, representing an NXT touch sensor attached to one of the BrickPi ports.
     Parameter *port* may be either a value (BrickPi.PORT_1) or an integer '1'-'5'
 
     Just using the BrickPi TYPE_SENSOR_TOUCH didn't work for me; hence this.
@@ -14,18 +14,7 @@ class TouchSensor(Sensor):
     '''
     def __init__(self, port):
         Sensor.__init__(self, port, Sensor.RAW)
-        #: Function that gets called with new value as parameter when the value changes - default, none.
-        self.callbackFunction = lambda x: 0
-        self.recentValue = True # default, 0, is pressed.
 
-    def updateValue(self, newValue):
-        previousValue = self.recentValue
-        Sensor.updateValue(self, newValue)
-        self.recentValue = False if self.recentValue > 500 else True
-        if self.recentValue != previousValue:
-            self.callbackFunction(self.recentValue)
+    def cookValue(self, rawValue):
+        return True if rawValue < 500 else False
 
-    def waitForChange(self):
-        previousValue = self.recentValue
-        while self.recentValue == previousValue:
-            yield
