@@ -3,7 +3,7 @@
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import unittest
-from BrickPython.TouchSensor import TouchSensor
+from BrickPython.Sensor import TouchSensor
 import TestScheduler
 
 class TestTouchSensor(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestTouchSensor(unittest.TestCase):
         self.assertEquals( sensor.value(), False )
 
     def testTextRepresentation(self):
-        self.assertEquals( repr(TouchSensor( '1' ) ), 'TouchSensor 1: True')
+        self.assertEquals( repr(TouchSensor( '1' ) ), 'TouchSensor 1: True (0)')
 
     def testCallbackWhenChanged(self):
         result = [True]

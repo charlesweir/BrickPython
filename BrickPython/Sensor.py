@@ -43,8 +43,10 @@ class Sensor():
         self.type = sensorType
         #: Character identifying the sensor: 1 through 5.
         self.idChar = chr(self.port + ord('1'))
-        #: The most recent sensor reading
+        #: The most recent value to return
         self.recentValue = self.cookValue(0)
+        #: The most recent raw value received from the BrickPi
+        self.rawValue = 0
         #: Function that gets called with new value as parameter when the value changes - default, none.
         self.callbackFunction = lambda x: 0
 
@@ -53,6 +55,7 @@ class Sensor():
         # We ignore zero values - probably means a comms failure.
         if newValue == 0:
             return
+        self.rawValue = newValue
         previousValue = self.recentValue
         self.recentValue = self.cookValue(newValue)
         if self.recentValue != previousValue:
@@ -64,7 +67,6 @@ class Sensor():
         while self.recentValue == previousValue:
             yield
 
-
     def value(self):
         'Answers the latest sensor value received'
         return self.recentValue
@@ -74,5 +76,20 @@ class Sensor():
         return rawValue
 
     def __repr__(self):
-        return "%s %s: %r" % (self.__class__.__name__, self.idChar, self.recentValue)
+        return "%s %s: %r (%d)" % (self.__class__.__name__, self.idChar, self.recentValue, self.rawValue)
+
+
+class TouchSensor(Sensor):
+    '''TouchSensor, representing an NXT touch sensor attached to one of the BrickPi ports.
+    Parameter *port* may be either a value (BrickPi.PORT_1) or an integer '1'-'5'
+
+    value() is True if the button is pressed; False otherwise.
+    '''
+    def __init__(self, port):
+        # Just using the BrickPi TYPE_SENSOR_TOUCH didn't work for me; hence raw.
+        Sensor.__init__(self, port, Sensor.RAW)
+
+    def cookValue(self, rawValue):
+        return True if rawValue < 500 else False
+
 

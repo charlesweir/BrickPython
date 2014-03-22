@@ -10,22 +10,23 @@ from BrickPython.TouchSensor import TouchSensor
 import logging
 
 class App(TkApplication):
-    '''Application to
+    '''Application to do stuff.
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {'4': TouchSensor })
-        self.doorLocked = False
-        self.addSensorCoroutine( self.turnWhenDetected() )
+        settings = {'2': TouchSensor }
+        TkApplication.__init__(self, settings)
         self.root.wm_title("Trial running")
         for c in "ABCD":
             self.motor(c).zeroPosition()
+        for c in settings:
+            self.addSensorCoroutine(self.showChanges(c))
 
-    def turnWhenDetected(self):
-        sensor = self.sensor('4')
+    def showChanges(self, sensorId):
+        sensor = self.sensor(sensorId)
         while True:
             for i in sensor.waitForChange(): yield
-            print sensor.value()
+            print sensor
 
 
 ##        for c in "ABCD":
