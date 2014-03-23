@@ -13,6 +13,7 @@ Contents:
 	programmingWithCoroutines
    	BrickPython
 	ExamplePrograms
+	nextSteps
 
 
 Indices and tables

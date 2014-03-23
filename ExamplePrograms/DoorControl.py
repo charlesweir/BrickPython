@@ -20,7 +20,7 @@ class DoorControlApp(TkApplication):
     '''
 
     def __init__(self):
-        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT })  # Compiler doesn't know these types.
+        TkApplication.__init__(self, {'1': Sensor.ULTRASONIC_CONT })
         self.doorLocked = False
         self.addSensorCoroutine( self.openDoorWhenSensorDetected() )
 

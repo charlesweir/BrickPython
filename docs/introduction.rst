@@ -1,4 +1,5 @@
 .. Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
+
 ===========================
 Introduction to BrickPython
 ===========================
@@ -29,8 +30,15 @@ As a taster, here's a coroutine function to detect presence via a sensor, open a
 
 The actual implementation - which also supports user input to change the behavior at any time - is :class:`.DoorControlApp` in ``ExamplePrograms/DoorControl.py``
 
-Why Objects
-===========
+Where to Find Everything
+========================
+
+The Python module is at https://pypi.python.org/pypi/BrickPython
+
+The source code is at https://github.com/charlesweir/BrickPython
+
+Why Objects?
+============
 
 Objects make programming easier.  Objects can be intelligent (for example, the Motor object can know its speed); they
 can be easier to debug (Motor can print itself in a useful way); and they separate out concerns (you can deal with one
@@ -51,7 +59,7 @@ But this makes programming rather hard.  One might want to have a nice simple fu
 	runMotorAtConstantSpeedForTime( aSpeed, aTime )
 
 But with normal Python programming model the program can only be executing one thing at a time.  So if it's executing
-that function, all the other input (other motor, sensors, user) are being ignored.
+that function, all the other input (other motor, sensors, user) is being ignored.
 
 **Ouch!**
 
@@ -60,7 +68,7 @@ There are two conventional approaches to this problem, both with disadvantages:
 *   **Event based programming**: Whenever anything happens (a new motor position, a sensor change, a user keystroke etc),
     the framework makes a call into your program.   This is a very common idiom, but it's surprisingly hard to program:
     every function has to decide what to do based on the values of variables.  This leads to a style of programming called 'state
-    machine programming'.  It's workable (c.f. Syntropy, a methodology based on state machines).
+    machine programming'.  It's workable (c.f. `Syntropy <http://www.syntropy.co.uk/syntropy/>`__, a methodology based on state machines).
     But it's not easy.
 
 
@@ -73,8 +81,7 @@ This framework uses a third option: **Coroutines**.   With a coroutine, you can 
 nevertheless allow other things to go on before they return.  This relies on the Python 'yield' statement, which
 allows a function to go 'on hold' while other processing happens.
 
-Strictly speaking, what this package supports aren't true coroutines: a 'true' coroutine has its own stack, so
-that if a coroutine function calls another function that calls 'yield', that would still work.
+Strictly speaking, what this package supports aren't true coroutines: a 'true' coroutine has its own stack.
 Python doesn't support that, but we have ways around the problem.
 
 Python 3.4 will have better support for coroutines - see http://docs.python.org/3.4/library/asyncio.html .
@@ -84,15 +91,15 @@ I'm grateful for David Beazley his tutorial on Python coroutines: http://dabeaz.
 The Scheduler
 =============
 
-To make our coroutines work, we need something that coordinates them, and manages the interaction with the BrickPi.  These are the classes `Scheduler` and its derived class `BrickPiWrapper`.
+To make our coroutines work, we need something that coordinates them and manages the interaction with the BrickPi.  These are the classes `Scheduler` and its derived class `BrickPiWrapper`.
 
-:class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (20 times per second), and provides methods to manage them:
+:class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (some 20 times per second), and provides methods to manage them:
 starting and stopping them, combining them, and supporting features such as timeouts for a coroutine.
 
 When the :class:`.Scheduler` stops a coroutine, the coroutine receives a :class:`.StopCoroutineException`; catching this allows the coroutine to tidy up properly.
 
 The class :class:`.BrickPiWrapper` extends the :class:`.Scheduler` to manage the BrickPi interaction, managing the :class:`.Motor` and :class:`.Sensor` objects, calling the BrickPi twice
-for every work call (once before, and once after all the coroutines have run), taking data from and subsequently updating all
+for every work call (once before, and once after all the coroutines have run), taking data from and subsequently updating
 each :class:`.Motor` and :class:`.Sensor`.
 
 So with the scheduler, here's all that's required to make a :class:`.Motor` move to a new position::
@@ -100,7 +107,7 @@ So with the scheduler, here's all that's required to make a :class:`.Motor` move
         co = theBrickPiWrapper.motor('A').moveTo( newPositionIndegrees*2 )
         theBrickPiWrapper.addActionCoroutine( co )
 
-That will move for up to 3 seconds to the new position - and while it's doing it, everything else
+That will move to the new position - and while it's doing it, everything else
 is still 'live' and being processed: user input, other
 coroutines, sensor input, you name it.
 
@@ -108,8 +115,8 @@ Integration with the Tk Graphical User Interface
 ================================================
 
 To make user input easy, this module provides and integration with the Tk graphical interface, using the Python Tkinter framework.
-The class that does this is :class:`.TkApplication`.   For convenience it derives from BrickPiWrapper.  The default
-shows a small grey window which accepts keystrokes, and exits when the 'q' key is pressed.
+The class that does this is :class:`.TkApplication`.   By default it
+shows a small grey window which accepts keystrokes, and exits when the 'q' key is pressed, but this can be overridden.
 
 Our example applications have a main class that derives from :class:`.TkApplication`, which itself derives from :class:`.BrickPiWrapper`.
 
@@ -117,7 +124,7 @@ Our example applications have a main class that derives from :class:`.TkApplicat
 Other Integrations
 ==================
 
-Integrations with other frameworks, or non at all, are equally straightforward.   The framework must call the
+Integrations with other frameworks, or none at all, are equally straightforward.   The framework must call the
 method :meth:`.Scheduler.doWork()` regularly, pausing for :meth:`.Scheduler.timeMillisToNextCall()` after each call.
 
 For example :class:`.CommandLineApplication` provides a scheduler for applications that don't require user input.
@@ -128,8 +135,19 @@ Motors and Sensors
 The :class:`.Motor` class implements methods to record and calculate the current speed.  It also implements the servo motor PID algorithm as the coroutine :meth:`.Motor.moveTo()`, allowing the motor
 to position itself accurately to a couple of degrees.  There's also a 'constant speed' coroutine :meth:`.Motor.setSpeed()`.
 
-The :class:`.Sensor` class simply keeps a record, :attr:`.Sensor.recentValues`, of the last few readings; its method :meth:`.Sensor.value()` answers the most recent one.  The type of each sensor
-is set up via initialization parameters to :class:`.BrickPiWrapper` (via :class:`.TkApplication` or :class:`.CommandLineApplication`).
+The :class:`.Sensor` class provides a superclass and default implementation for all sensors.  Its method :meth:`.Sensor.value()` answers the current value (possible values depend on the sensor type).
+It provides two approaches to check for changes:
+
+* :meth:`.Sensor.waitForChange()` is a coroutine that returns only when the sensor value changes.
+
+* :attr:`.Sensor.callbackFunction` is a function that will be called with the new value as a parameter
+  when the value changes.
+
+Current supported implementation are :class:`.TouchSensor`, :class:`.UltrasonicSensor` and :class:`.LightSensor`
+The physical configuration of sensors is set up as an initialization parameter to the Application class (:class:`.TkApplication` or :class:`.CommandLineApplication`)::
+
+        TkApplication.__init__(self, {'1': LightSensor, '2': TouchSensor, '3': UltrasonicSensor })
+
 
 Example Applications
 ====================
@@ -137,17 +155,34 @@ Example Applications
 * :class:`.MotorControllerApp` is for experimenting with a motor connected to port A.  It supports varying the PID settings, and moving different distances or at constant speed.
 
 * :class:`.DoorControlApp` is an example of more real-life functionality.  It uses a sensor to detect an approaching person, opens a door for 4 seconds, then closes it again.
-  on user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
+  On user input, it can 'lock' the door - closing it immediately and disabling it from opening again.
+
+* :class:`.SimpleApp` has no UI, and simply rotates the motor on port A back and forth.
 
 Other Environments
 ==================
 
 To help with development, this package also runs on other environments.  It's been tested on Mac OS X, but should run on
 any Python environment.  In non-RaspberryPi environments, it replaces the hardware connections with a 'mock'
-serial connection, with the result that it ignores motor settings and always returns default values (0)
+serial connection, which ignores motor settings and always returns default values (0)
 for sensors and motor positions.
 
 In particular, all the unit tests will run on any environment.
+
+Scripts
+=======
+
+The githup repository includes a script I find useful for when doing development from another Linux machine:
+`runbp <https://github.com/charlesweir/BrickPython/blob/develop/runbp>`__.  This copies
+all the files in the directory tree below the location of the ``runbp`` script over the the same place (relative
+to home directory) on the BrickPi, and runs a command there.  E.g.::
+
+	cd BrickPython/test
+	../runbp nosetests
+
+runs ``nosetests`` in the test directory on the BrickPi, with all the relevant files copied over.
+You may well need to tweak and move the script
+to suit your own environment - and see also the comments at the start of the script.
 
 Test Code
 =========
@@ -156,7 +191,7 @@ Finally, there are unit tests for all of the code here.  If you have ``nosetests
 
 	nosetests
 
-from the top level directory, or invoke them using::
+from the top level directory, or invoke them through the package manager using::
 
     python setup.py test
 

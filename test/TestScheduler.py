@@ -11,6 +11,7 @@
 
 from BrickPython.BrickPiWrapper import *
 import unittest
+import logging
 from mock import *
 
 class TestScheduler(unittest.TestCase):
@@ -59,11 +60,12 @@ class TestScheduler(unittest.TestCase):
         self.scheduler = Scheduler()
         # Yes - we can use @Patch to do the following for specific tests, but that fails horribly when
         # tests are run as python setup.py test
-        self.saveCurrentTimeMillis = Scheduler.currentTimeMillis
+        TestScheduler.saveCurrentTimeMillis = Scheduler.currentTimeMillis
         Scheduler.currentTimeMillis =  Mock( side_effect = xrange(0,10000) ) # Each call answers the next integer
 
-        def tearDown(self):
-            Scheduler.currentTimeMillis = self.saveCurrentTimeMillis
+    def tearDown(self):
+        pass
+#         Scheduler.currentTimeMillis = TestScheduler.saveCurrentTimeMillis
 
     def testCoroutinesGetCalledUntilDone(self):
         # When we start a motor coroutine
@@ -116,7 +118,8 @@ class TestScheduler(unittest.TestCase):
         self.scheduler.addActionCoroutine(TestScheduler.dummyCoroutineThatThrowsException())
         # then the scheduler will remove it from the work schedule
         self.scheduler.doWork()
-        assert( self.scheduler.numCoroutines() == 0 )
+        self.scheduler.doWork() # CW - can't quite figure out why we need two calls here...
+        self.assertEquals( self.scheduler.numCoroutines(), 0 )
 
     def testCoroutinesCanCleanupWhenTerminated(self):
         # When we start a motor coroutine
@@ -143,7 +146,7 @@ class TestScheduler(unittest.TestCase):
         motorCo = TestScheduler.dummyCoroutine(2)
         motorCoReturned = self.scheduler.addActionCoroutine(motorCo)
         sensorCoReturned = self.scheduler.addSensorCoroutine(sensorCo)
-        # Then the 'latest coroutine' of each time will be returned correctly:
+        # Then the 'latest coroutine' will be returned correctly:
         self.assertEquals( motorCoReturned, motorCo )
         self.assertEquals( sensorCoReturned, sensorCo )
         # and the motor coroutine will update the status last:
@@ -171,7 +174,7 @@ class TestScheduler(unittest.TestCase):
         for i in self.scheduler.runTillFirstCompletes(TestScheduler.dummyCoroutine(1,9),
                                                       TestScheduler.dummyCoroutine(1,2),
                                                       TestScheduler.dummyCoroutine(1,9) ):
-            self.scheduler.doWork()
+            pass
         #  the first to complete stops the others:
         self.assertEquals( TestScheduler.coroutineCalls, [1,1,1,2] )
         self.assertEquals( self.scheduler.numCoroutines(), 0)
@@ -179,7 +182,7 @@ class TestScheduler(unittest.TestCase):
     def testRunTillAllComplete( self ):
         # When we run three coroutines using runTillAllComplete:
         for i in self.scheduler.runTillAllComplete( *[TestScheduler.dummyCoroutine(1,i) for i in [2,3,4]] ):
-            self.scheduler.doWork()
+            pass
         #  they all run to completion:
         print TestScheduler.coroutineCalls
         assert( TestScheduler.coroutineCalls == [1,1,1,2,2,3] )
@@ -188,7 +191,7 @@ class TestScheduler(unittest.TestCase):
     def testWithTimeout(self):
         # When we run a coroutine with a timeout:
         for i in self.scheduler.withTimeout(10, TestScheduler.dummyCoroutineThatDoesCleanup(1,99) ):
-            self.scheduler.doWork()
+            pass
         # It completes at around the timeout, and does cleanup:
         print TestScheduler.coroutineCalls
         self.assertTrue( 0 < TestScheduler.coroutineCalls[-2] <= 10) # N.b. currentTimeMillis is called more than once per doWork call.
@@ -250,7 +253,58 @@ class TestScheduler(unittest.TestCase):
         arrayParameter.append(1)
         TestScheduler.checkCoroutineFinished( coroutine )
 
+    @staticmethod
+    def throwingCoroutine():
+        yield
+        raise Exception("Hello")
+
+    def testExceptionThrownFromCoroutine(self):
+        scheduler = Scheduler()
+        self.assertIsNotNone(scheduler.lastExceptionCaught)
+        scheduler.addActionCoroutine(self.throwingCoroutine())
+        for i in range(1,3):
+            scheduler.doWork()
+        self.assertEquals(scheduler.lastExceptionCaught.message, "Hello")
+
+    def testRunTillFirstCompletesWithException(self):
+        # When we run three coroutines using runTillFirstCompletes:
+        self.scheduler.addActionCoroutine(self.scheduler.runTillFirstCompletes(self.throwingCoroutine(),
+                                                      TestScheduler.dummyCoroutine(1,2),
+                                                      TestScheduler.dummyCoroutine(1,9) ))
+        for i in range(1,10):
+            self.scheduler.doWork()
+        #  the first to complete stops the others:
+        self.assertEquals( TestScheduler.coroutineCalls, [1,1] )
+        self.assertEquals( self.scheduler.numCoroutines(), 0)
+        # and the exception is caught by the Scheduler:
+        self.assertEquals(self.scheduler.lastExceptionCaught.message, "Hello")
+
+    def testRunTillAllCompleteWithException( self ):
+        # When we run three coroutines using runTillAllComplete:
+        self.scheduler.addActionCoroutine(self.scheduler.runTillAllComplete(self.throwingCoroutine(),
+                                                      TestScheduler.dummyCoroutine(1,2)))
+        for i in range(1,10):
+            self.scheduler.doWork()
+        #  the first to complete stops the others:
+        self.assertEquals( TestScheduler.coroutineCalls, [1] )
+        self.assertEquals( self.scheduler.numCoroutines(), 0)
+        # and the exception is caught by the Scheduler:
+        self.assertEquals(self.scheduler.lastExceptionCaught.message, "Hello")
+
+    def testCanCatchExceptionWithinNestedCoroutines(self):
+        self.caught = 0
+        def outerCoroutine(self):
+            try:
+                for i in self.throwingCoroutine():
+                    yield
+            except:
+                self.caught = 1
+        for i in outerCoroutine(self):
+            pass
+        self.assertEquals(self.caught, 1)
+
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(message)s', level=logging.DEBUG) # Logging is a simple print
     unittest.main()
 

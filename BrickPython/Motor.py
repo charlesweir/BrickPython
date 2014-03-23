@@ -11,14 +11,14 @@ class PIDSetting():
     Distances are in clicks, times in ms, motor power between -255 and +255, the sum of distance is added 20 times/sec.
     Speeds in clicks per second.
     '''
-    def __init__(self,distanceMultiplier=0.9,speedMultiplier=0.23,sumDistanceMultiplier=0.05,
+    def __init__(self,distanceMultiplier=0.9,speedMultiplier=0.23,integratedDistanceMultiplier=(0.05/20.0),
                  closeEnoughPosition=4, closeEnoughSpeed=10.0):
-        #: Factor for motor power as function of distance.
+        #: Factor for motor power as function of distance - in power units per click distance.
         self.distanceMultiplier = distanceMultiplier
-        #: Factor for motor power as function of speed.
+        #: Factor for motor power as function of speed - in power units per (click per millisecond)
         self.speedMultiplier = speedMultiplier
-        #: Factor for motor power as function of sum of distances.
-        self.sumDistanceMultiplier = sumDistanceMultiplier
+        #: Factor for motor power as a function of the integrated distance - in power units per (click-millisecond)
+        self.integratedDistanceMultiplier = integratedDistanceMultiplier
         #: Distance in clicks from the target that we'll accept as got there.
         self.closeEnoughPosition = closeEnoughPosition
         #: Speed that we'll consider as close enough to zero.
@@ -26,8 +26,8 @@ class PIDSetting():
 
 
     def __repr__(self):
-        return "PID Setting (distanceMultiplier=%3.4f, speedMultiplier=%3.4f, sumDistanceMultiplier=%3.4f)" % (self.distanceMultiplier,
-                                                                        self.speedMultiplier, self.sumDistanceMultiplier)
+        return "PID Setting (distanceMultiplier=%3.4f, speedMultiplier=%3.4f, integratedDistanceMultiplier=%3.4f)" % (self.distanceMultiplier,
+                                                                        self.speedMultiplier, self.integratedDistanceMultiplier)
 
 
 class TimePosition():
@@ -124,13 +124,13 @@ class Motor():
 
     def positionUsingPIDAlgorithmWithoutTimeout( self, target ):
         'Coroutine to move the motor to position *target*, using the PID algorithm with the current PIDSettings'
-        sumDistance = 0 # Sum of all the distances (=I bit of PID ).
+        distanceIntegratedOverTime = 0 # I bit of PID.
         self.enable(True)
         logging.info( "Motor %s moving to %d" % (self.idChar, target) )
         try:
             while True:
                 delta = (target - self.currentTP.position)
-                sumDistance += delta
+                distanceIntegratedOverTime += delta * (self.currentTP.time - self.previousTP.time)
                 speed = self.speed()
 
                 if abs(delta) <= self.pidSetting.closeEnoughPosition and abs(speed) < self.pidSetting.closeEnoughSpeed:
@@ -138,7 +138,7 @@ class Motor():
 
                 power = (self.pidSetting.distanceMultiplier * delta
                          - self.pidSetting.speedMultiplier * speed
-                         + self.pidSetting.sumDistanceMultiplier * sumDistance )
+                         + self.pidSetting.integratedDistanceMultiplier * distanceIntegratedOverTime )
                 self.setPower( power )
 
                 yield

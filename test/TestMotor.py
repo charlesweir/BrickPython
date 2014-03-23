@@ -106,19 +106,36 @@ class TestMotor(unittest.TestCase):
         motor = self.motor
         # When the motor isn't moving and is some distance from the target
         co = motor.positionUsingPIDAlgorithmWithoutTimeout( 100 )
+        # And we have quite long work cycles:
+        motor.timeMillis.side_effect = range(0,990,20)
         # The motor power increases with time
         motor.updatePosition( 0 )
         co.next()
         p1 = motor.power()
         motor.updatePosition( 0 )
         co.next()
-        assert( motor.power() > p1 )
+        p2 = motor.power()
+        self.assertGreater( p2, p1 )
+
+        # And the motor power depends on time between readings, so if we do it all again
+        # with with longer work cycles and a different motor
+        motorB = self.bp.motor( 'B' )
+        motorB.timeMillis = Mock()
+        motorB.timeMillis.side_effect = range(0,990,40)
+        co = motorB.positionUsingPIDAlgorithmWithoutTimeout( 100 )
+        motorB.updatePosition( 0 )
+        co.next()
+        motorB.updatePosition( 0 )
+        co.next()
+        # then we get a larger power reading than before
+        self.assertGreater( motorB.power(), p2 )
+
 
     def testTimesOutIfNeverReachesTarget(self):
         motor = self.motor
         co = motor.positionUsingPIDAlgorithm( 100 )
         # If the motor never reaches the target in 6 seconds:
-        for i in range(0,6000/20):
+        for i in xrange(0,6000/50):
             self.bp.doWork()
         # It terminates
         self.assertFalse( self.bp.stillRunning( co ) )
@@ -156,6 +173,9 @@ class TestMotor(unittest.TestCase):
 
     def testMotorTextRepresentation(self):
         self.assertRegexpMatches( repr(self.motor), 'Motor.*location=.*speed=.*')
+
+    def testPIDIntegratedDistanceMultiplierBackwardCompatibility(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

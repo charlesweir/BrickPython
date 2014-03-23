@@ -4,6 +4,8 @@
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
 import datetime
+import logging
+import sys, traceback
 
 class StopCoroutineException( Exception ):
     '''Exception used to stop a coroutine'''
@@ -19,6 +21,8 @@ class Scheduler():
     It supports one special coroutine - the updatorCoroutine, which is invoked before and after all the other ones.
     '''
 
+    timeMillisBetweenWorkCalls = 50
+
     @staticmethod
     def currentTimeMillis():
         'Answers the time in floating point milliseconds since program start.'
@@ -27,11 +31,13 @@ class Scheduler():
         return c.days * (3600.0 * 1000 * 24) + c.seconds * 1000.0 + c.microseconds / 1000.0
 
     def __init__(self, timeMillisBetweenWorkCalls = 50):
-
-        self.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
+        Scheduler.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []
         self.timeOfLastCall = Scheduler.currentTimeMillis()
         self.updateCoroutine = self.nullCoroutine() # for testing - usually replaced.
+        #: The most recent exception raised by a coroutine:
+        self.lastExceptionCaught = Exception("None")
+
 
     def doWork(self):
         'Executes all the coroutines, handling exceptions'
@@ -41,13 +47,17 @@ class Scheduler():
             return
         self.timeOfLastCall = timeNow
         self.updateCoroutine.next()
-        for coroutine in self.coroutines[:]:   # Copy of coroutines, so it doesn't matter removing
+        for coroutine in self.coroutines[:]:   # Copy of coroutines, so it doesn't matter removing one
             try:
                 coroutine.next()
             except (StopIteration):
                 self.coroutines.remove( coroutine )
             except Exception as e:
-                print "Got exception: ", e
+                self.lastExceptionCaught = e
+                logging.info( "Scheduler - caught: %r" % (e) )
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                trace = "".join(traceback.format_tb(exc_traceback))
+                logging.debug( "Traceback (latest call first):\n %s" % trace )
                 self.coroutines.remove( coroutine )
 
         self.updateCoroutine.next()
@@ -114,14 +124,11 @@ class Scheduler():
                     coroutine.next()
                 except (StopIteration, StopCoroutineException):
                     return # CW - I don't understand it, but we don't seem to need to terminate the others explicitly.
-                except Exception as e:
-                    print "Got exception: ", e
-                    return
             yield
 
     @staticmethod
     def runTillAllComplete(*coroutineList ):
-        'Coroutine that executes the given coroutines until all have completed.'
+        'Coroutine that executes the given coroutines until all have completed or one throws an exception.'
         coroutines = list( coroutineList )
         while coroutines != []:
             for coroutine in coroutines:
@@ -129,9 +136,6 @@ class Scheduler():
                     coroutine.next()
                 except (StopIteration, StopCoroutineException):
                     coroutines.remove( coroutine )
-                except Exception as e:
-                    print "Got exception: ", e
-                    return
             yield
 
     @staticmethod
@@ -143,7 +147,7 @@ class Scheduler():
 
     @staticmethod
     def withTimeout( timeoutMillis, *coroutineList ):
-        'Coroutine that wraps the given coroutine with a timeout'
+        'Coroutine that wraps the given coroutine(s) with a timeout'
         return Scheduler.runTillFirstCompletes( Scheduler.waitMilliseconds( timeoutMillis ), *coroutineList )
 
     @staticmethod

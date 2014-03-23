@@ -1,5 +1,15 @@
 # BrickPython Changelog
 
+## BrickPython v0.4
+
+- Updated PID algorithm so it's independent of the work cycle time.
+  BACKWARDS COMPATIBILITY WARNING: One parameter to the constructor of
+  Motor.PIDSetting has changed.
+
+- Added specialized sensor classes: UltrasonicSensor, TouchSensor, LightSensor
+
+- Added  runbp script
+
 ## BrickPython v0.3.1
 
 - Reduced sampling frequency so TkWindow shows correctly.

@@ -1,6 +1,6 @@
 .. README.rst project overview for PyPi
 ..
-..	Check using rst2html.py README.rst README.html
+.. Check using rst2html.py README.rst README.html
 
 ===========
 BrickPython
@@ -27,14 +27,12 @@ The framework provides coroutines to give you always-responsive programs, and ob
 Features
 --------
 
-* Simple objects representing Motor and Sensor
+* Implementation of PID algorithm to make an NXT motor into a servo-motor
+* Simple objects representing Motor and different types of Sensor
 * Implementation of Python coroutines and scheduler for Python 2.7
 * Uses Brickpi.py from BrickPi_python
-* Implementation of PID algorithm to make an NXT motor into a servo-motor
 * Implementation of an NXT motor constant speed algorithm
 * Full unit test suite
 * Runs on other Linux environments (Mac etc) for unit tests and development.
 
-
-.. TODO: Links to Coroutine presentation.
 

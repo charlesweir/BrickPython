@@ -11,20 +11,24 @@ class BrickPiWrapper(Scheduler):
     '''
     This extends the Scheduler with functionality specific to the BrickPi
 
-    The constructor takes a map giving the sensor type connected to each port: 1 through 5.
-        E.g. BrickPiWrapper( {'1': Sensor.ULTRASONIC_CONT} )
+    The constructor takes a map giving the class for the sensor connected to each port: 1 through 5.
+        E.g. BrickPiWrapper( {'1': TouchSensor, '2': UltrasonicSensor } )
 
     Motors and sensors are identified by their port names: motors are A to D; sensors 1 to 5.
     '''
     def __init__(self, portTypes = {} ):
         Scheduler.__init__(self)
         self.motors = { 'A': Motor(BP.PORT_A, self), 'B': Motor(BP.PORT_B, self), 'C': Motor(BP.PORT_C, self), 'D': Motor(BP.PORT_D, self) }
-        self.sensors = { '1': Sensor( BP.PORT_1 ), '2': Sensor( BP.PORT_2 ), '3': Sensor( BP.PORT_3 ), '4': Sensor( BP.PORT_4 ) }
+        self.sensors = {  }
         BP.BrickPiSetup()  # setup the serial port for communication
 
-        for port in portTypes:
-            portNum = Sensor.portNumFromId(port)
-            BP.BrickPi.SensorType[portNum] = portTypes[port]
+        for port, sensorType in portTypes.items():
+            if isinstance(sensorType, int):
+                sensor = Sensor(port, sensorType)
+            else:
+                sensor = sensorType(port)
+            self.sensors[sensor.idChar] = sensor
+            BP.BrickPi.SensorType[sensor.port] = sensor.type
         BP.BrickPiSetupSensors()       #Send the properties of sensors to BrickPi
 
         self.setUpdateCoroutine( self.updaterCoroutine() )

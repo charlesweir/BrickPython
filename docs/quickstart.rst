@@ -1,4 +1,5 @@
 .. Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
+
 ===========
 Quick Start
 ===========
@@ -13,13 +14,11 @@ To install BrickPython, use::
 
 Then take a sample application from https://github.com/charlesweir/BrickPython/tree/develop/ExamplePrograms .
 
-Suppose you chose DoorControl.py.  You can run it using::
+Suppose you chose `DoorControl.py`.  Plug a motor into port A and an ultrasound sensor into port 1, and run the program using::
 
     python DoorControl.py
 
-or if this gives security errors, try::
-
-	sudo python DoorControl.py
+(or possibly `sudo python DoorControl.py` if that gives errors.)
 
 And you're away...
 
