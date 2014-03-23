@@ -21,6 +21,8 @@ class Scheduler():
     It supports one special coroutine - the updatorCoroutine, which is invoked before and after all the other ones.
     '''
 
+    timeMillisBetweenWorkCalls = 50
+
     @staticmethod
     def currentTimeMillis():
         'Answers the time in floating point milliseconds since program start.'
@@ -29,7 +31,7 @@ class Scheduler():
         return c.days * (3600.0 * 1000 * 24) + c.seconds * 1000.0 + c.microseconds / 1000.0
 
     def __init__(self, timeMillisBetweenWorkCalls = 50):
-        self.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
+        Scheduler.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []
         self.timeOfLastCall = Scheduler.currentTimeMillis()
         self.updateCoroutine = self.nullCoroutine() # for testing - usually replaced.
@@ -145,7 +147,7 @@ class Scheduler():
 
     @staticmethod
     def withTimeout( timeoutMillis, *coroutineList ):
-        'Coroutine that wraps the given coroutine with a timeout'
+        'Coroutine that wraps the given coroutine(s) with a timeout'
         return Scheduler.runTillFirstCompletes( Scheduler.waitMilliseconds( timeoutMillis ), *coroutineList )
 
     @staticmethod
