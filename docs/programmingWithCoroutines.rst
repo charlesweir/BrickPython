@@ -10,7 +10,7 @@ A simple example
 
 Here's a simple application, from :class:`.SimpleApp`::
 
-	from BrickPython.CommandLineApplication import *
+	from BrickPython.CommandLineApplication import CommandLineApplication
 
 	class SimpleApp(CommandLineApplication):
 	    def __init__(self):

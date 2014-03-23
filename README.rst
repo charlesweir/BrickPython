@@ -28,7 +28,7 @@ Features
 --------
 
 * Implementation of PID algorithm to make an NXT motor into a servo-motor
-* Simple objects representing Motor and Sensor
+* Simple objects representing Motor and different types of Sensor
 * Implementation of Python coroutines and scheduler for Python 2.7
 * Uses Brickpi.py from BrickPi_python
 * Implementation of an NXT motor constant speed algorithm

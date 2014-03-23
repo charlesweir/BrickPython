@@ -68,7 +68,7 @@ There are two conventional approaches to this problem, both with disadvantages:
 *   **Event based programming**: Whenever anything happens (a new motor position, a sensor change, a user keystroke etc),
     the framework makes a call into your program.   This is a very common idiom, but it's surprisingly hard to program:
     every function has to decide what to do based on the values of variables.  This leads to a style of programming called 'state
-    machine programming'.  It's workable (c.f. Syntropy, a methodology based on state machines).
+    machine programming'.  It's workable (c.f. `Syntropy <http://www.syntropy.co.uk/syntropy/>`__, a methodology based on state machines).
     But it's not easy.
 
 
@@ -93,7 +93,7 @@ The Scheduler
 
 To make our coroutines work, we need something that coordinates them and manages the interaction with the BrickPi.  These are the classes `Scheduler` and its derived class `BrickPiWrapper`.
 
-:class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (20 times per second), and provides methods to manage them:
+:class:`.Scheduler` handles coroutines, calling them regularly every 'work call' (some 20 times per second), and provides methods to manage them:
 starting and stopping them, combining them, and supporting features such as timeouts for a coroutine.
 
 When the :class:`.Scheduler` stops a coroutine, the coroutine receives a :class:`.StopCoroutineException`; catching this allows the coroutine to tidy up properly.
@@ -107,7 +107,7 @@ So with the scheduler, here's all that's required to make a :class:`.Motor` move
         co = theBrickPiWrapper.motor('A').moveTo( newPositionIndegrees*2 )
         theBrickPiWrapper.addActionCoroutine( co )
 
-That will move for up to 3 seconds to the new position - and while it's doing it, everything else
+That will move to the new position - and while it's doing it, everything else
 is still 'live' and being processed: user input, other
 coroutines, sensor input, you name it.
 
@@ -140,7 +140,8 @@ It provides two approaches to check for changes:
 
 * :meth:`.Sensor.waitForChange()` is a coroutine that returns only when the sensor value changes.
 
-* :attr:`.Sensor.callbackFunction` is a function that will be called with the new value as a parameter when the value changed.
+* :attr:`.Sensor.callbackFunction` is a function that will be called with the new value as a parameter
+  when the value changes.
 
 Current supported implementation are :class:`.TouchSensor`, :class:`.UltrasonicSensor` and :class:`.LightSensor`
 The physical configuration of sensors is set up as an initialization parameter to the Application class (:class:`.TkApplication` or :class:`.CommandLineApplication`)::
@@ -167,6 +168,21 @@ serial connection, which ignores motor settings and always returns default value
 for sensors and motor positions.
 
 In particular, all the unit tests will run on any environment.
+
+Scripts
+=======
+
+The githup repository includes a script I find useful for when doing development from another Linux machine:
+`runbp <https://github.com/charlesweir/BrickPython/blob/develop/runbp>`__.  This copies
+all the files in the directory tree below the location of the ``runbp`` script over the the same place (relative
+to home directory) on the BrickPi, and runs a command there.  E.g.::
+
+	cd BrickPython/test
+	../runbp nosetests
+
+runs ``nosetests`` in the test directory on the BrickPi, with all the relevant files copied over.
+You may well need to tweak and move the script
+to suit your own environment - and see also the comments at the start of the script.
 
 Test Code
 =========
