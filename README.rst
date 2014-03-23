@@ -35,4 +35,13 @@ Features
 * Full unit test suite
 * Runs on other Linux environments (Mac etc) for unit tests and development.
 
+Changes in v0.4
+---------------
 
+* Updated PID algorithm so it's independent of the work cycle time.
+  BACKWARDS COMPATIBILITY WARNING: One parameter to the constructor of
+  Motor.PIDSetting has changed.
+
+* Added specialized sensor classes: UltrasonicSensor, TouchSensor, LightSensor
+
+* Added useful script for cross-platform testing.
