@@ -1,6 +1,6 @@
 # BrickPython Changelog
 
-## BrickPython v.4
+## BrickPython v0.4
 
 - Updated PID algorithm so it's independent of the work cycle time.
   BACKWARDS COMPATIBILITY WARNING: One parameter to the constructor of
