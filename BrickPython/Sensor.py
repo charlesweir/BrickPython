@@ -68,18 +68,18 @@ class Sensor():
             yield
 
     def value(self):
-        'Answers the latest sensor value received'
+        'Answers the latest sensor value received (overridable)'
         return self.recentValue
 
     def cookValue(self, rawValue):
-        'Answers the value to return for a given input sensor reading'
+        'Answers the value to return for a given input sensor reading  (overridable)'
         return rawValue
 
     def __repr__(self):
         return "%s %s: %r (%d)" % (self.__class__.__name__, self.idChar, self.displayValue(), self.rawValue)
 
     def displayValue(self):
-        'Answers a good representation of the current value for display'
+        'Answers a good representation of the current value for display (overridable)'
         return self.value()
 
 class TouchSensor(Sensor):
@@ -109,11 +109,13 @@ class UltrasonicSensor(Sensor):
     SMOOTHING_RANGE=10
 
     def __init__(self, port):
-        self.recentRawValues = [255]
+        self.recentRawValues = []
         Sensor.__init__(self, port, Sensor.ULTRASONIC_CONT)
+        # Don't want to return 0 initially, so need to reset the defaults:
+        self.recentRawValues = [255]
+        self.recentValue = UltrasonicSensor.MAX_VALUE
 
     def cookValue(self, rawValue):
-        rawValue = 255 if rawValue == 0 else rawValue
         self.recentRawValues.append( rawValue )
         if len(self.recentRawValues) > UltrasonicSensor.SMOOTHING_RANGE:
             del self.recentRawValues[0]
