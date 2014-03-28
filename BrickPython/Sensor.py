@@ -109,10 +109,11 @@ class UltrasonicSensor(Sensor):
     SMOOTHING_RANGE=10
 
     def __init__(self, port):
-        self.recentRawValues = [0]
+        self.recentRawValues = [255]
         Sensor.__init__(self, port, Sensor.ULTRASONIC_CONT)
 
     def cookValue(self, rawValue):
+        rawValue = 255 if rawValue == 0 else rawValue
         self.recentRawValues.append( rawValue )
         if len(self.recentRawValues) > UltrasonicSensor.SMOOTHING_RANGE:
             del self.recentRawValues[0]

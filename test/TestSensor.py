@@ -65,12 +65,12 @@ class TestSensor(unittest.TestCase):
         sensor = UltrasonicSensor( '1' )
         self.assertEquals(sensor.port, 0)
         self.assertEquals( sensor.idChar, '1' )
-        for input, output in {0:0, 2:0, 3:5, 4:5, 9:10, 11:10, 14:15, 16:15, 22:20, 23:25, 26:25,
+        for input, output in {0:UltrasonicSensor.MAX_VALUE, 2:0, 3:5, 4:5, 9:10, 11:10, 14:15, 16:15, 22:20, 23:25, 26:25,
                               255: UltrasonicSensor.MAX_VALUE
                               }.items():
-            for i in xrange(0,100):
+            for i in xrange(0,UltrasonicSensor.SMOOTHING_RANGE+1):
                 sensor.updateValue( input )  # Remove effects of smoothing.
-            self.assertEquals( sensor.value(), output )
+            self.assertEquals( sensor.value(), output, "Failed with input %d: got %d" %(input,sensor.value()) )
 
     def testUltrasonicSensorSmoothing(self):
         sensor = UltrasonicSensor( '1' )
