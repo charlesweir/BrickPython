@@ -98,7 +98,7 @@ class TestScheduler(unittest.TestCase):
         self.scheduler.stopCoroutine( coroutine )
         self.scheduler.doWork()
         # It has completed early
-        assert( TestScheduler.coroutineCalls[-1] == 1 )
+        self.assertEquals( TestScheduler.coroutineCalls[-1], 1 )
         TestScheduler.checkCoroutineFinished( coroutine )
 
     def testAllCoroutinesCanBeTerminated(self):
@@ -111,7 +111,7 @@ class TestScheduler(unittest.TestCase):
         self.scheduler.doWork()
         self.scheduler.doWork()
         # They all terminate
-        assert( TestScheduler.coroutineCalls == [1 , 1] )
+        self.assertEquals(TestScheduler.coroutineCalls, [1 , 1] )
 
     def testCoroutineThatThrowsException(self):
         # When we have a coroutine that throws an exception:

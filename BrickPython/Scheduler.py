@@ -6,12 +6,62 @@
 import datetime
 import logging
 import sys, traceback
+import threading
 
 class StopCoroutineException( Exception ):
     '''Exception used to stop a coroutine'''
     pass
 
 ProgramStartTime = datetime.datetime.now()
+
+class Coroutine():
+    def __init__(self):
+        #: Semaphore is one when blocked, 0 when running
+        self.semaphore = threading.Semaphore(0)
+
+    def action(self):
+        pass
+
+
+class GeneratorCoroutineWrapper(Coroutine):
+
+    def __init__(self, scheduler, generator):
+        Coroutine.__init__(self)
+        self.scheduler = scheduler
+        self.stopEvent = threading.Event()
+        self.generator = generator
+        self.thread = threading.Thread(target=self.action)
+        self.thread.start()
+
+    def action(self):
+        'The thread entry function - executed within thread `thread`'
+        try:
+            self.semaphore.acquire()
+            while not self.stopEvent.is_set():
+                self.generator.next()
+                self.scheduler.semaphore.release()
+                self.semaphore.acquire()
+            self.generator.throw(StopCoroutineException)
+        except (StopCoroutineException, StopIteration):
+            pass
+        except Exception as e:
+            self.scheduler.lastExceptionCaught = e
+            logging.info( "Scheduler - caught: %r" % (e) )
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            trace = "".join(traceback.format_tb(exc_traceback))
+            logging.debug( "Traceback (latest call first):\n %s" % trace )
+
+        self.scheduler.coroutines.remove( self )
+        self.scheduler.semaphore.release()
+
+    def next(self):
+        'Runs a bit of processing (next on the generator) - executed from the scheduler thread - returns only when processing has completed'
+        self.semaphore.release()
+        self.scheduler.semaphore.acquire()
+
+    def stop(self):
+        'Causes the thread to stop'
+        self.stopEvent.set()
 
 
 class Scheduler():
@@ -34,9 +84,11 @@ class Scheduler():
         Scheduler.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []
         self.timeOfLastCall = Scheduler.currentTimeMillis()
-        self.updateCoroutine = self.nullCoroutine() # for testing - usually replaced.
+        self.updateCoroutine = GeneratorCoroutineWrapper( self, self.nullCoroutine() ) # for testing - usually replaced.
         #: The most recent exception raised by a coroutine:
         self.lastExceptionCaught = Exception("None")
+        #: Semaphore is one when blocked (running a coroutine), 0 when active
+        self.semaphore = threading.Semaphore(0)
 
 
     def doWork(self):
@@ -48,17 +100,7 @@ class Scheduler():
         self.timeOfLastCall = timeNow
         self.updateCoroutine.next()
         for coroutine in self.coroutines[:]:   # Copy of coroutines, so it doesn't matter removing one
-            try:
-                coroutine.next()
-            except (StopIteration):
-                self.coroutines.remove( coroutine )
-            except Exception as e:
-                self.lastExceptionCaught = e
-                logging.info( "Scheduler - caught: %r" % (e) )
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                trace = "".join(traceback.format_tb(exc_traceback))
-                logging.debug( "Traceback (latest call first):\n %s" % trace )
-                self.coroutines.remove( coroutine )
+            coroutine.next()
 
         self.updateCoroutine.next()
 
@@ -71,31 +113,36 @@ class Scheduler():
     def addSensorCoroutine(self, *coroutineList):
         '''Adds one or more new sensor/program coroutines to be scheduled, answering the last one to be added.
         Sensor coroutines are scheduled *before* Action coroutines'''
-        self.coroutines[0:0] = coroutineList
-        return coroutineList[-1]
+        for generatorFunction in coroutineList:
+            latestAdded = GeneratorCoroutineWrapper(self, generatorFunction)
+            self.coroutines[0:0] = [ latestAdded ]
+        return generatorFunction
 
     def addActionCoroutine(self, *coroutineList):
         '''Adds one or more new motor control coroutines to be scheduled, answering the last coroutine to be added.
         Action coroutines are scheduled *after* Sensor coroutines'''
-        self.coroutines.extend( coroutineList )
-        return coroutineList[-1]
+        for generatorFunction in coroutineList:
+            latestAdded = GeneratorCoroutineWrapper(self, generatorFunction)
+            self.coroutines.extend( [ latestAdded ] )
+        return generatorFunction
 
     def setUpdateCoroutine(self, coroutine):
         # Private - set the coroutine that manages the interaction with the BrickPi.
         # The coroutine will be invoked once at the start and once at the end of each doWork call.
-        self.updateCoroutine = coroutine
+        self.updateCoroutine = GeneratorCoroutineWrapper(self, coroutine)
+
+    def findCoroutineForGenerator(self, generator):
+        return [c for c in self.coroutines if c.generator == generator][0]
 
     def stopCoroutine( self, *coroutineList ):
         'Terminates the given one or more coroutines'
-        for coroutine in coroutineList:
-            try:
-                coroutine.throw(StopCoroutineException)
-            except (StopCoroutineException,StopIteration):  # If the coroutine doesn't catch the exception to tidy up, it comes back here.
-                self.coroutines.remove( coroutine )
+        for generator in coroutineList:
+            coroutine = self.findCoroutineForGenerator(generator)
+            coroutine.stop()
 
     def stopAllCoroutines(self):
         'Terminates all coroutines (except the updater one) - rather drastic!'
-        self.stopCoroutine(*self.coroutines[:]) # Makes a copy of the list - don't want to be changing it.
+        self.stopCoroutine(*[c.generator for c in self.coroutines]) # Makes a copy of the list - don't want to be changing it.
 
     def numCoroutines( self ):
         'Answers the number of active coroutines'
@@ -155,3 +202,4 @@ class Scheduler():
         'Coroutine that waits until the given function (with optional parameters) returns True.'
         while not function(*args):
             yield
+
