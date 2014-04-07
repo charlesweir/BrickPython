@@ -24,13 +24,17 @@ class Coroutine():
 
 
 class GeneratorCoroutineWrapper(Coroutine):
+    '''Internal: Wraps a generator-style coroutine with a thread'''
 
     def __init__(self, scheduler, generator):
+        '''`scheduler` - the main Scheduler object
+        `generator` - the generator object created by calling the generator function'''
         Coroutine.__init__(self)
         self.scheduler = scheduler
         self.stopEvent = threading.Event()
         self.generator = generator
         self.thread = threading.Thread(target=self.action)
+        self.thread.setDaemon(True) # Daemon threads don't prevent the process from exiting.
         self.thread.start()
 
     def action(self):
@@ -60,7 +64,7 @@ class GeneratorCoroutineWrapper(Coroutine):
         self.scheduler.semaphore.acquire()
 
     def stop(self):
-        'Causes the thread to stop'
+        'Causes the thread to stop - executed from the scheduler thread'
         self.stopEvent.set()
 
 
@@ -115,7 +119,7 @@ class Scheduler():
         Sensor coroutines are scheduled *before* Action coroutines'''
         for generatorFunction in coroutineList:
             latestAdded = GeneratorCoroutineWrapper(self, generatorFunction)
-            self.coroutines[0:0] = [ latestAdded ]
+            self.coroutines.insert(0, latestAdded)
         return generatorFunction
 
     def addActionCoroutine(self, *coroutineList):
@@ -123,7 +127,7 @@ class Scheduler():
         Action coroutines are scheduled *after* Sensor coroutines'''
         for generatorFunction in coroutineList:
             latestAdded = GeneratorCoroutineWrapper(self, generatorFunction)
-            self.coroutines.extend( [ latestAdded ] )
+            self.coroutines.append(latestAdded)
         return generatorFunction
 
     def setUpdateCoroutine(self, coroutine):
@@ -132,7 +136,7 @@ class Scheduler():
         self.updateCoroutine = GeneratorCoroutineWrapper(self, coroutine)
 
     def findCoroutineForGenerator(self, generator):
-        return [c for c in self.coroutines if c.generator == generator][0]
+        return (c for c in self.coroutines if c.generator == generator).next()
 
     def stopCoroutine( self, *coroutineList ):
         'Terminates the given one or more coroutines'
