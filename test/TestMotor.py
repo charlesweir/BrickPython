@@ -12,11 +12,17 @@ from mock import Mock
 class TestMotor(unittest.TestCase):
     ''' Tests for the Motor class, especially for PID Servo Motor functionality'''
     def setUp(self):
+        self.saveTime = Scheduler.currentTimeMillis
+        Scheduler.currentTimeMillis = Mock(side_effect = xrange(1,10000))
         self.bp = BrickPiWrapper()
         motor = self.motor = self.bp.motor( 'A' )
         #motor.position = Mock()
         motor.timeMillis = Mock()
         motor.timeMillis.side_effect = range(0,9999)
+
+    def tearDown(self):
+        Scheduler.currentTimeMillis = self.saveTime
+        unittest.TestCase.tearDown(self)
 
     def testZeroPosition( self ):
         motor = self.motor

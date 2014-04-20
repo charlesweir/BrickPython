@@ -43,7 +43,7 @@ class TestScheduler(unittest.TestCase):
 
     @staticmethod
     def dummyCoroutineThatThrowsException():
-        raise Exception()
+        raise Exception("Hello")
         yield
 
     @staticmethod
@@ -58,9 +58,13 @@ class TestScheduler(unittest.TestCase):
 
     def setUp(self):
         TestScheduler.coroutineCalls = []
-        self.scheduler = Scheduler()
-        # Don't need to replace this afterward - tests never use real time.
+        TestScheduler.oldCurrentTimeMillis = Scheduler.currentTimeMillis
         Scheduler.currentTimeMillis =  Mock( side_effect = xrange(0,10000) ) # Each call answers the next integer
+        self.scheduler = Scheduler()
+
+    def tearDown(self):
+        Scheduler.currentTimeMillis = TestScheduler.oldCurrentTimeMillis
+
 
     def testCoroutinesGetCalledUntilDone(self):
         # When we start a motor coroutine
@@ -162,7 +166,8 @@ class TestScheduler(unittest.TestCase):
         for i in self.scheduler.waitMilliseconds(10):
             pass
         # that's about the time that will have passed:
-        assert( self.scheduler.currentTimeMillis() in range(10,12) )
+        timeNow = self.scheduler.currentTimeMillis()
+        assert( timeNow in range(10,12), "Wrong time "  )
 
     def testRunTillFirstCompletes(self):
         # When we run three coroutines using runTillFirstCompletes:
@@ -224,12 +229,12 @@ class TestScheduler(unittest.TestCase):
         while True:
             yield
             newTime = Scheduler.currentTimeMillis()
-            self.assertNotEquals( newTime, time )
+            self.assertNotEquals( newTime, time, "Time same for two scheduler calls" )
             time = newTime
 
     def testEachCallToACoroutineGetsADifferentTime(self):
-        scheduler = Scheduler()
         Scheduler.currentTimeMillis =  Mock( side_effect = [0,0,0,0,0,0,0,0,0,0,1,2,3,4,5] )
+        scheduler = Scheduler()
         # For any coroutine,
         scheduler.setUpdateCoroutine( self.timeCheckerCoroutine() )
         # We can guarantee that the timer always increments between calls (for speed calculations etc).

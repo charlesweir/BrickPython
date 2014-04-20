@@ -37,9 +37,11 @@ class TestCoroutine(unittest.TestCase):
 
     def setUp(self):
         TestCoroutine.coroutineCalls = []
+        TestCoroutine.oldCurrentTimeMillis = Coroutine.currentTimeMillis
+        Coroutine.currentTimeMillis = Mock(side_effect = [1,10,500,1200])
 
     def tearDown(self):
-        pass
+        Coroutine.currentTimeMillis = TestCoroutine.oldCurrentTimeMillis
 
     def testCoroutinesGetCalledUntilDone(self):
         # When we start a coroutine
@@ -88,8 +90,6 @@ class TestCoroutine(unittest.TestCase):
             Coroutine.waitMilliseconds(1000)
 
         coroutine = Coroutine(dummyCoroutineFuncWaiting1Sec)
-        # Doesn't matter not restoring this; tests never use real time:
-        Coroutine.currentTimeMillis = Mock(side_effect = [1,10,500,1200])
         for i in range(1,3):
             coroutine.call()
             self.assertTrue(coroutine.is_alive(),"Coroutine dead at call %d" % i)
@@ -132,7 +132,6 @@ class TestCoroutine(unittest.TestCase):
         self.assertEquals(TestCoroutine.coroutineCalls, [1,1,2,2,3,4,5])
 
     def testWithTimeout(self):
-        Coroutine.currentTimeMillis = Mock(side_effect = [1,10,500,1200])
         coroutine = Coroutine(TestCoroutine.dummyCoroutineFunc,1,20).withTimeout(1000)
         for i in range(1,20):
             coroutine.call()

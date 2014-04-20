@@ -62,6 +62,9 @@ class Coroutine( threading.Thread ):
             self.callerSemaphore.acquire()
             if self.stopEvent.is_set():
                 self.join() # Ensure that is_alive is false on exit.
+                # For testing - assertions within coroutines must be passed back to main thread.
+                if self.lastExceptionCaught != None and isinstance(self.lastExceptionCaught, AssertionError):
+                    raise self.lastExceptionCaught
         return self.callResult
 
     def stop(self):
