@@ -14,13 +14,16 @@ import unittest
 import logging
 from mock import *
 
+logging.basicConfig(format='%(message)s', level=logging.DEBUG) # Logging is a simple print
+
 class TestCoroutine(unittest.TestCase):
     ''' Tests for the Scheduler class, its built-in coroutines, and its coroutine handling.
     '''
     coroutineCalls = []
     @staticmethod
-    def dummyCoroutineFunc():
-        for i in range(1, 5):
+    def dummyCoroutineFunc(start=1, end=5):
+        logging.debug( "in dummyCoroutineFunc %d %d" %(start, end) )
+        for i in range(start, end):
             TestCoroutine.coroutineCalls.append(i)
             Coroutine.wait();
 
@@ -32,7 +35,7 @@ class TestCoroutine(unittest.TestCase):
                 Coroutine.wait()
             finally:
                 TestCoroutine.coroutineCalls.append( -1 )
-                
+
     def setUp(self):
         TestCoroutine.coroutineCalls = []
 
@@ -45,7 +48,9 @@ class TestCoroutine(unittest.TestCase):
         coroutine = Coroutine( f )
         # It's a daemon thread
         self.assertTrue( coroutine.isDaemon())
-        # It doesn't run until we call it.
+        # It's alive
+        self.assertTrue(coroutine.is_alive())
+        # But it doesn't run until we call it.
         self.assertEqual(TestCoroutine.coroutineCalls, [] )
         # Each call gets one iteration
         coroutine.call()
@@ -113,17 +118,13 @@ class TestCoroutine(unittest.TestCase):
         #And running it has caused the result parameter to be checked correctly before the coroutine terminated
         self.assertFalse(coroutine.is_alive())
 
-    def testRunCoroutinesUntilFirstCompletes(self):
-        def cofunc1():
-            Coroutine.wait()
-        def cofunc2():
-            Coroutine.wait()
-            Coroutine.wait()
-#         Coroutine.runTillFirstCompletes
-        pass
+    def testRunCoroutinesUntilFirstCompletesOrAllComplete(self):
+        coroutine = Coroutine.runTillFirstCompletes(Coroutine(TestCoroutine.dummyCoroutineFunc,1,3),
+                                                    Coroutine(TestCoroutine.dummyCoroutineFunc,1,6))
+        for i in range(1,10):
+            coroutine.call()
+        self.assertEquals(TestCoroutine.coroutineCalls, [1,1,2,2])
 
-    def testRunCoroutinesUntilAllComplete(self):
-        pass
 
 
 

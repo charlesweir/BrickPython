@@ -16,6 +16,7 @@ ProgramStartTime = datetime.datetime.now()
 
 class Coroutine( threading.Thread ):
     def __init__(self, func, *args, **kwargs):
+        print "Coroutine: %r %r" % (args, kwargs)
         threading.Thread.__init__(self)
         self.args = args
         self.kwargs = kwargs
@@ -48,6 +49,7 @@ class Coroutine( threading.Thread ):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             trace = "".join(traceback.format_tb(exc_traceback))
             self.logger.debug( "Traceback (latest call first):\n %s" % trace )
+        self.stopEvent.set() # Need to tell caller to do a join.
         self.callerSemaphore.release()
         threading.Thread.run(self) # Does some cleanup.
 
@@ -55,10 +57,12 @@ class Coroutine( threading.Thread ):
         '''Executed from the caller thread.  Runs the coroutine until it calls wait.
         Does nothing if the thread has terminated.
         If a parameter is passed, it is returned from the Coroutine.wait() function in the coroutine thread.'''
-        if self.isAlive():
+        if self.is_alive():
             self.callParam = param
             self.mySemaphore.release()
             self.callerSemaphore.acquire()
+            if self.stopEvent.is_set():
+                self.join() # Ensure that is_alive is false on exit.
         return self.callResult
 
     def stop(self):
@@ -85,12 +89,27 @@ class Coroutine( threading.Thread ):
 
     @staticmethod
     def waitMilliseconds(timeMillis):
-        'Called from within the coroutine to wait the given time'
+        '''Called from within the coroutine to wait the given time.
+        I.e. Invocations of the coroutine using call() will do nothing until then. '''
         startTime = Coroutine.currentTimeMillis()
         while Coroutine.currentTimeMillis() - startTime < timeMillis:
             Coroutine.wait()
 
-#             while not self.stopEvent.is_set():
+    @staticmethod
+    def runTillFirstCompletes(*coroutines):
+        def runTillFirstCompletesFunc(*coroutineList):
+            while True:
+                for c in coroutineList:
+                    c.call()
+                    if not c.is_alive():
+                        break
+                Coroutine.wait()
+            for c in coroutineList:
+                if c.is_alive():
+                    c.stop()
+
+        result = Coroutine(runTillFirstCompletesFunc, *coroutines)
+        return result
 
 #
 #         self.scheduler.coroutines.remove( self )
