@@ -16,7 +16,6 @@ ProgramStartTime = datetime.datetime.now()
 
 class Coroutine( threading.Thread ):
     def __init__(self, func, *args, **kwargs):
-        print "Coroutine: %r %r" % (args, kwargs)
         threading.Thread.__init__(self)
         self.args = args
         self.kwargs = kwargs
@@ -98,7 +97,7 @@ class Coroutine( threading.Thread ):
     @staticmethod
     def runTillFirstCompletes(*coroutines):
         def runTillFirstCompletesFunc(*coroutineList):
-            while True:
+            while all(c.is_alive() for c in coroutineList):
                 for c in coroutineList:
                     c.call()
                     if not c.is_alive():
@@ -109,6 +108,25 @@ class Coroutine( threading.Thread ):
                     c.stop()
 
         result = Coroutine(runTillFirstCompletesFunc, *coroutines)
+        return result
+
+    @staticmethod
+    def runTillAllComplete(*coroutines):
+        def runTillAllCompleteFunc(*coroutineList):
+            while any(c.is_alive() for c in coroutineList):
+                for c in coroutineList:
+                    c.call()
+                Coroutine.wait()
+
+        result = Coroutine(runTillAllCompleteFunc, *coroutines)
+        return result
+
+    def withTimeout(self, timeoutMillis):
+        '''Answers this coroutine, decorated with a timeout that stops it if called after timeoutMillis has elapsed.
+        '''
+        def timeoutFunc(timeoutMillis):
+            Coroutine.waitMilliseconds(timeoutMillis)
+        result = Coroutine.runTillFirstCompletes(self, Coroutine(timeoutFunc, timeoutMillis))
         return result
 
 #

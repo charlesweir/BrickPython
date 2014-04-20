@@ -22,7 +22,6 @@ class TestCoroutine(unittest.TestCase):
     coroutineCalls = []
     @staticmethod
     def dummyCoroutineFunc(start=1, end=5):
-        logging.debug( "in dummyCoroutineFunc %d %d" %(start, end) )
         for i in range(start, end):
             TestCoroutine.coroutineCalls.append(i)
             Coroutine.wait();
@@ -100,7 +99,7 @@ class TestCoroutine(unittest.TestCase):
 
     def testCoroutineCanHaveParameters(self):
         def func(*args, **kwargs):
-            self.assertEquals(args, (1))
+            self.assertEquals(args, (1,))
             self.assertEquals(kwargs, {"extra": 2})
         coroutine = Coroutine(func, 1, extra=2)
         coroutine.call()
@@ -118,12 +117,26 @@ class TestCoroutine(unittest.TestCase):
         #And running it has caused the result parameter to be checked correctly before the coroutine terminated
         self.assertFalse(coroutine.is_alive())
 
-    def testRunCoroutinesUntilFirstCompletesOrAllComplete(self):
+    def testRunCoroutinesUntilFirstCompletes(self):
         coroutine = Coroutine.runTillFirstCompletes(Coroutine(TestCoroutine.dummyCoroutineFunc,1,3),
                                                     Coroutine(TestCoroutine.dummyCoroutineFunc,1,6))
         for i in range(1,10):
             coroutine.call()
         self.assertEquals(TestCoroutine.coroutineCalls, [1,1,2,2])
+
+    def testRunCoroutinesUntilAllComplete(self):
+        coroutine = Coroutine.runTillAllComplete(Coroutine(TestCoroutine.dummyCoroutineFunc,1,3),
+                                                    Coroutine(TestCoroutine.dummyCoroutineFunc,1,6))
+        for i in range(1,10):
+            coroutine.call()
+        self.assertEquals(TestCoroutine.coroutineCalls, [1,1,2,2,3,4,5])
+
+    def testWithTimeout(self):
+        Coroutine.currentTimeMillis = Mock(side_effect = [1,10,500,1200])
+        coroutine = Coroutine(TestCoroutine.dummyCoroutineFunc,1,20).withTimeout(1000)
+        for i in range(1,20):
+            coroutine.call()
+        self.assertEquals(TestCoroutine.coroutineCalls, [1,2,3])
 
 
 
