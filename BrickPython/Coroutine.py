@@ -36,6 +36,7 @@ class Coroutine( threading.Thread ):
         return c.days * (3600.0 * 1000 * 24) + c.seconds * 1000.0 + c.microseconds / 1000.0
 
     def run(self):
+        self.callResult = None
         try:
             self.mySemaphore.acquire()
             self.func(*self.args,**self.kwargs)
@@ -50,25 +51,37 @@ class Coroutine( threading.Thread ):
         self.callerSemaphore.release()
         threading.Thread.run(self) # Does some cleanup.
 
-    def call(self):
-        'Executed from the caller thread.  Runs the coroutine until it calls wait. Does nothing if the thread has terminated.'
+    def call(self, param = None):
+        '''Executed from the caller thread.  Runs the coroutine until it calls wait.
+        Does nothing if the thread has terminated.
+        If a parameter is passed, it is returned from the Coroutine.wait() function in the coroutine thread.'''
         if self.isAlive():
+            self.callParam = param
             self.mySemaphore.release()
             self.callerSemaphore.acquire()
+        return self.callResult
 
     def stop(self):
-        'Executed from the caller thread.  Stops the coroutine, causing thread to terminate.'
+        '''Executed from the caller thread.  Stops the coroutine, causing its thread to terminate.
+        On completion the thread has terminated: is_active() is false.
+        To support this, a coroutine mustn't catch the StopCoroutineException (unless it re-raises it).
+        '''
         self.stopEvent.set()
         self.call()
+        self.join()
 
     @staticmethod
-    def wait():
-        'Called from within the coroutine to hand back control to the caller thread'
+    def wait(param = None):
+        '''Called from within the coroutine to hand back control to the caller thread.
+        If a parameter is passed, it will be returned from Coroutine.call in the caller thread.
+        '''
         self=threading.currentThread()
+        self.callResult = param
         self.callerSemaphore.release()
         self.mySemaphore.acquire()
         if (self.stopEvent.isSet()):
             raise StopCoroutineException()
+        return self.callParam
 
     @staticmethod
     def waitMilliseconds(timeMillis):

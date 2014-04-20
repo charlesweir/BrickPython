@@ -32,11 +32,7 @@ class TestCoroutine(unittest.TestCase):
                 Coroutine.wait()
             finally:
                 TestCoroutine.coroutineCalls.append( -1 )
-
-    @staticmethod
-    def dummyCoroutineFuncThatThrowsException():
-        raise Exception("Hello")
-
+                
     def setUp(self):
         TestCoroutine.coroutineCalls = []
 
@@ -54,7 +50,7 @@ class TestCoroutine(unittest.TestCase):
         # Each call gets one iteration
         coroutine.call()
         self.assertEqual(TestCoroutine.coroutineCalls, [1] )
-        # And when we run it until finished
+        # And when we run it until finished...
         for i in range(0,10):
             coroutine.call()
         # It has completed
@@ -72,7 +68,9 @@ class TestCoroutine(unittest.TestCase):
         self.assertEquals( TestCoroutine.coroutineCalls, [1,-1] )
 
     def testCoroutineExceptionLogging(self):
-        coroutine = Coroutine(TestCoroutine.dummyCoroutineFuncThatThrowsException)
+        def dummyCoroutineFuncThatThrowsException():
+            raise Exception("Hello")
+        coroutine = Coroutine(dummyCoroutineFuncThatThrowsException)
         coroutine.logger = Mock()
         coroutine.call()
         self.assertTrue(coroutine.logger.info.called)
@@ -91,23 +89,37 @@ class TestCoroutine(unittest.TestCase):
         for i in range(1,3):
             coroutine.call()
             self.assertTrue(coroutine.is_alive(),"Coroutine dead at call %d" % i)
+        # Don't understand why this is failing!
         coroutine.call()
-        self.assertFalse(coroutine.is_alive())
+        self.assertFalse(coroutine.is_alive(), "Coroutine should have finished")
 
     def testCoroutineCanHaveParameters(self):
         def func(*args, **kwargs):
-            print "In coroutine: %r %r" % (args, kwargs)
             self.assertEquals(args, (1))
             self.assertEquals(kwargs, {"extra": 2})
         coroutine = Coroutine(func, 1, extra=2)
         coroutine.call()
 
-        pass
-
     def testWaitCanPassAndReceiveParameters(self):
-        pass
+        def cofunc():
+            result = Coroutine.wait(1)
+            # the parameter passed in was right.
+            self.assertEquals(result, 2)
+        coroutine = Coroutine(cofunc)
+        #After we start the coroutine
+        coroutine.call()
+        #The next call returns the result we're expecting
+        self.assertEquals(coroutine.call(2), 1)
+        #And running it has caused the result parameter to be checked correctly before the coroutine terminated
+        self.assertFalse(coroutine.is_alive())
 
     def testRunCoroutinesUntilFirstCompletes(self):
+        def cofunc1():
+            Coroutine.wait()
+        def cofunc2():
+            Coroutine.wait()
+            Coroutine.wait()
+#         Coroutine.runTillFirstCompletes
         pass
 
     def testRunCoroutinesUntilAllComplete(self):
