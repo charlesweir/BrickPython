@@ -1,75 +1,35 @@
 # Scheduler
-# Support for coroutines using Python generator functions.
+# Support for coroutines using either Python generator functions or thread-based coroutines.
 #
 # Copyright (c) 2014 Charles Weir.  Shared under the MIT Licence.
 
-import datetime
-import logging
-import sys, traceback
 import threading
-
-class StopCoroutineException( Exception ):
-    '''Exception used to stop a coroutine'''
-    pass
-
-ProgramStartTime = datetime.datetime.now()
-
-class Coroutine():
-    def __init__(self):
-        #: Semaphore is one when blocked, 0 when running
-        self.semaphore = threading.Semaphore(0)
-
-    def action(self):
-        pass
-
+from Coroutine import Coroutine, StopCoroutineException
 
 class GeneratorCoroutineWrapper(Coroutine):
     '''Internal: Wraps a generator-style coroutine with a thread'''
 
-    def __init__(self, scheduler, generator):
+    def __init__(self, generator):
         '''`scheduler` - the main Scheduler object
         `generator` - the generator object created by calling the generator function'''
-        Coroutine.__init__(self)
-        self.scheduler = scheduler
-        self.stopEvent = threading.Event()
+        Coroutine.__init__(self, self.action)
         self.generator = generator
-        self.thread = threading.Thread(target=self.action)
-        self.thread.setDaemon(True) # Daemon threads don't prevent the process from exiting.
-        self.thread.start()
 
     def action(self):
         'The thread entry function - executed within thread `thread`'
-        try:
-            self.semaphore.acquire()
-            while not self.stopEvent.is_set():
-                self.generator.next()
-                self.scheduler.semaphore.release()
-                self.semaphore.acquire()
-            self.generator.throw(StopCoroutineException)
-        except (StopCoroutineException, StopIteration):
-            pass
-        except Exception as e:
-            self.scheduler.lastExceptionCaught = e
-            logging.info( "Scheduler - caught: %r" % (e) )
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            trace = "".join(traceback.format_tb(exc_traceback))
-            logging.debug( "Traceback (latest call first):\n %s" % trace )
-
-        self.scheduler.coroutines.remove( self )
-        self.scheduler.semaphore.release()
-
-    def next(self):
-        'Runs a bit of processing (next on the generator) - executed from the scheduler thread - returns only when processing has completed'
-        self.semaphore.release()
-        self.scheduler.semaphore.acquire()
+        for _ in self.generator:
+            Coroutine.wait()
 
     def stop(self):
-        'Causes the thread to stop - executed from the scheduler thread'
-        self.stopEvent.set()
+        try:
+            self.generator.throw(StopCoroutineException())
+        except StopCoroutineException:
+            pass
+        Coroutine.stop(self)
 
 
 class Scheduler():
-    ''' This manages an arbitrary number of coroutines (implemented as generator functions), supporting
+    ''' This manages an arbitrary number of coroutines (including generator functions), supporting
     invoking each every *timeMillisBetweenWorkCalls*, and detecting when each has completed.
 
     It supports one special coroutine - the updatorCoroutine, which is invoked before and after all the other ones.
@@ -78,22 +38,21 @@ class Scheduler():
     timeMillisBetweenWorkCalls = 50
 
     @staticmethod
+    def makeCoroutine(coroutineOrGenerator):
+        return coroutineOrGenerator if coroutineOrGenerator is Coroutine else GeneratorCoroutineWrapper(coroutineOrGenerator)
+
+
+    @staticmethod
     def currentTimeMillis():
-        'Answers the time in floating point milliseconds since program start.'
-        global ProgramStartTime
-        c = datetime.datetime.now() - ProgramStartTime
-        return c.days * (3600.0 * 1000 * 24) + c.seconds * 1000.0 + c.microseconds / 1000.0
+        return Coroutine.currentTimeMillis()
 
     def __init__(self, timeMillisBetweenWorkCalls = 50):
         Scheduler.timeMillisBetweenWorkCalls = timeMillisBetweenWorkCalls
         self.coroutines = []
         self.timeOfLastCall = Scheduler.currentTimeMillis()
-        self.updateCoroutine = GeneratorCoroutineWrapper( self, self.nullCoroutine() ) # for testing - usually replaced.
+        self.updateCoroutine = Scheduler.makeCoroutine( self.nullCoroutine() ) # for testing - usually replaced.
         #: The most recent exception raised by a coroutine:
         self.lastExceptionCaught = Exception("None")
-        #: Semaphore is one when blocked (running a coroutine), 0 when active
-        self.semaphore = threading.Semaphore(0)
-
 
     def doWork(self):
         'Executes all the coroutines, handling exceptions'
@@ -102,11 +61,14 @@ class Scheduler():
         if timeNow == self.timeOfLastCall: # Ensure each call gets a different timer value.
             return
         self.timeOfLastCall = timeNow
-        self.updateCoroutine.next()
+        self.updateCoroutine.call()
         for coroutine in self.coroutines[:]:   # Copy of coroutines, so it doesn't matter removing one
-            coroutine.next()
+            coroutine.call()
+            if not coroutine.is_alive():
+                self.coroutines.remove(coroutine)
+                self.lastExceptionCaught = coroutine.lastExceptionCaught
 
-        self.updateCoroutine.next()
+        self.updateCoroutine.call()
 
     def timeMillisToNextCall(self):
         'Wait time before the next doWork call should be called.'
@@ -118,7 +80,7 @@ class Scheduler():
         '''Adds one or more new sensor/program coroutines to be scheduled, answering the last one to be added.
         Sensor coroutines are scheduled *before* Action coroutines'''
         for generatorFunction in coroutineList:
-            latestAdded = GeneratorCoroutineWrapper(self, generatorFunction)
+            latestAdded = Scheduler.makeCoroutine(generatorFunction)
             self.coroutines.insert(0, latestAdded)
         return generatorFunction
 
@@ -126,14 +88,14 @@ class Scheduler():
         '''Adds one or more new motor control coroutines to be scheduled, answering the last coroutine to be added.
         Action coroutines are scheduled *after* Sensor coroutines'''
         for generatorFunction in coroutineList:
-            latestAdded = GeneratorCoroutineWrapper(self, generatorFunction)
+            latestAdded = Scheduler.makeCoroutine(generatorFunction)
             self.coroutines.append(latestAdded)
         return generatorFunction
 
     def setUpdateCoroutine(self, coroutine):
         # Private - set the coroutine that manages the interaction with the BrickPi.
         # The coroutine will be invoked once at the start and once at the end of each doWork call.
-        self.updateCoroutine = GeneratorCoroutineWrapper(self, coroutine)
+        self.updateCoroutine = Scheduler.makeCoroutine(coroutine)
 
     def findCoroutineForGenerator(self, generator):
         return (c for c in self.coroutines if c.generator == generator).next()
@@ -157,7 +119,7 @@ class Scheduler():
         return any( c in self.coroutines for c in coroutineList )
 
     #############################################################################################
-    #                 Coroutines
+    # Generator-based coroutines.  Kept for backward compatibility.
     #############################################################################################
 
     @staticmethod

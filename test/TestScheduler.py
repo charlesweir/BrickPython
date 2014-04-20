@@ -9,7 +9,8 @@
 
 
 
-from BrickPython.BrickPiWrapper import *
+from BrickPython.BrickPiWrapper import BrickPiWrapper
+from BrickPython.Scheduler import Scheduler
 import unittest
 import logging
 from mock import *
@@ -58,14 +59,8 @@ class TestScheduler(unittest.TestCase):
     def setUp(self):
         TestScheduler.coroutineCalls = []
         self.scheduler = Scheduler()
-        # Yes - we can use @Patch to do the following for specific tests, but that fails horribly when
-        # tests are run as python setup.py test
-        TestScheduler.saveCurrentTimeMillis = Scheduler.currentTimeMillis
+        # Don't need to replace this afterward - tests never use real time.
         Scheduler.currentTimeMillis =  Mock( side_effect = xrange(0,10000) ) # Each call answers the next integer
-
-    def tearDown(self):
-        pass
-#         Scheduler.currentTimeMillis = TestScheduler.saveCurrentTimeMillis
 
     def testCoroutinesGetCalledUntilDone(self):
         # When we start a motor coroutine
